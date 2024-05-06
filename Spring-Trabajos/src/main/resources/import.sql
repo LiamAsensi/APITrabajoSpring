@@ -1,0 +1,5 @@
+INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('1', '123456789', 'Juan', 'Pérez', 'Carpintería', 'contraseña123', 'juan@example.com');
+INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('2', '987654321', 'María', 'García', 'Electricidad', 'password456', 'maria@example.com');
+INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T1', 'Construcción', 'Reparación de tejado', '2024-05-01', '2024-05-10', 80.5, '1', 1);
+INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T2', 'Fontanería', 'Instalación de tuberías', '2024-05-05', '2024-05-15', 65.0, '2', 2);
+INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T3', 'Pintura', 'Pintar fachada', '2024-05-08', '2024-05-12', 40.0, NULL, 3);
