@@ -8,4 +8,9 @@ public interface ITrabajadorService {
 
 	public List<Trabajador> findAll();
 	
+	public Trabajador findById(String id);
+	
+	public Trabajador save(Trabajador trabajador);
+	
+	public void delete(String id);
 }

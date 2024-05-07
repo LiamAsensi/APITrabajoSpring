@@ -20,4 +20,22 @@ public class TrabajadorServiceImpl implements ITrabajadorService{
 	public List<Trabajador> findAll() {
 		return (List<Trabajador>) trabajadorDAO.findAll();
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Trabajador findById(String id) {
+		return trabajadorDAO.findById(id).orElse(null);
+	}
+	
+	@Override
+	@Transactional
+	public Trabajador save(Trabajador trabajador) {
+		return trabajadorDAO.save(trabajador);
+	}
+	
+	@Override
+	@Transactional
+	public void delete(String id) {
+		trabajadorDAO.deleteById(id);
+	}
 }
