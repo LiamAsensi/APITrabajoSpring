@@ -8,4 +8,9 @@ public interface ITrabajoService {
 
 	public List<Trabajo> findAll();
 	
+	public void save(Trabajo trabajo);
+
+	public Trabajo findById(String id);
+	
+	public void delete(Trabajo trabajo);
 }

@@ -20,4 +20,22 @@ public class TrabajoServiceImpl implements ITrabajoService{
 	public List<Trabajo> findAll() {
 		return (List<Trabajo>) trabajoDAO.findAll();
 	}
+	
+	@Override
+	@Transactional()
+	public void save(Trabajo trabajo) {
+		trabajoDAO.save(trabajo);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Trabajo findById(String id) {
+		return trabajoDAO.findById(id).orElse(null);
+	}
+	
+	@Override
+	@Transactional()
+	public void delete(Trabajo trabajo) {
+		trabajoDAO.delete(trabajo);
+	}
 }
