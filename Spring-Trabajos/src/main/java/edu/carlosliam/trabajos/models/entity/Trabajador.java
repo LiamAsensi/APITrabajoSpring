@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,12 +22,13 @@ import jakarta.validation.constraints.Size;
 @Table(name="trabajador")
 public class Trabajador implements Serializable{
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@NotEmpty(message = "no puede estar vacío")
+	@Size(max = 5, message = "el tamaño solo puede ser hasta 5 caracteres")
 	@Column(name="id_trabajador")
 	private String idTrabajador;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 5, max = 5, message = "el tamaño debe ser de 5 caracteres")
+	@Size(min = 8, max = 9, message = "el tamaño debe ser entre 8 y 9 caracteres")
 	@Column(nullable = false, unique = true)
 	private String dni;
 	
@@ -56,8 +59,13 @@ public class Trabajador implements Serializable{
 	private String email;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "trabajador")
-	private Set<Trabajo> trabajoses = new HashSet<Trabajo>(0);
+	@JsonManagedReference
+	private Set<Trabajo> trabajos = new HashSet<Trabajo>(0);
 	
+	public String getIdTrabajador() {
+		return idTrabajador;
+	}
+
 	public String getDni() {
 		return dni;
 	}
@@ -106,5 +114,13 @@ public class Trabajador implements Serializable{
 		this.email = email;
 	}
 	
+	public Set<Trabajo> getTrabajos() {
+		return trabajos;
+	}
+
+	public void setTrabajos(Set<Trabajo> trabajos) {
+		this.trabajos = trabajos;
+	}
+
 	private static final long serialVersionUID = 1L;
 }

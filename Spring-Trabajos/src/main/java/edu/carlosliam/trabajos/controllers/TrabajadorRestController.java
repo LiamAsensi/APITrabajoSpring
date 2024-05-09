@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +36,25 @@ public class TrabajadorRestController {
 	private ITrabajadorService trabajadorService;
 	
 	@GetMapping("/trabajadores")
-	public List<Trabajador> index() {
-		return this.trabajadorService.findAll();
+	public ResponseEntity<?> index() {
+		List<Trabajador> trabajadores = null;
+		Map<String, Object> response = new HashMap<>();
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+		
+		try {
+			trabajadores = this.trabajadorService.findAll();
+		} catch(DataAccessException e) {
+			response.put("error", true);
+			response.put("errorMessage", "Error al realizar la consulta en la base de datos.");
+			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		response.put("error", false);
+		response.put("result", trabajadores);
+		
+		return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.OK);
 	}
 	
 	@GetMapping("/trabajadores/{id}")
@@ -43,20 +62,27 @@ public class TrabajadorRestController {
 		Trabajador trabajador = null;
 		Map<String, Object> response = new HashMap<>();
 		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+		
 		try {
 			trabajador = this.trabajadorService.findById(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la consulta en la base de datos.");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("errorMessage", "Error al realizar la consulta en la base de datos.");
+			response.put("error", true);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if (trabajador == null) {
-			response.put("mensaje", "El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
+			response.put("errorMessage", "El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
+			response.put("error", true);
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		
-		return new ResponseEntity<Trabajador>(trabajador, HttpStatus.OK);
+		response.put("error", false);
+		response.put("result", trabajador);
+		
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 	
 	@PostMapping("/trabajadores")
@@ -65,28 +91,38 @@ public class TrabajadorRestController {
 		Trabajador trabajadorNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+		
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
 					.collect(Collectors.toList());
 			
-			response.put("errores", errors);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+			response.put("error", true);
+			response.put("errorMessage", String.join(", ", errors));
+			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.BAD_REQUEST);
 		}
 		
 		try {
-			trabajadorNuevo = this.trabajadorService.save(trabajadorNuevo);
+			if (this.trabajadorService.findById(trabajador.getIdTrabajador()) != null) {
+				response.put("error", true);
+				response.put("errorMessage", "El trabajador con el ID: ".concat(trabajador.getIdTrabajador()).concat(" ya existe."));
+				return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.BAD_REQUEST);
+			}
+			
+			trabajadorNuevo = this.trabajadorService.save(trabajador);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la inserción en la base de datos.");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			response.put("error", true);
+			response.put("errorMessage", "Error al realizar la inserción en la base de datos: " + e.getLocalizedMessage());
+			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("mensaje", "El trabajador se ha creado con éxito.");
-		response.put("trabajador", trabajadorNuevo);
+		response.put("error", false);
+		response.put("result", trabajadorNuevo);
 		
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/trabajadores/{id}")
@@ -94,6 +130,9 @@ public class TrabajadorRestController {
 	public ResponseEntity<?> update(@Valid @RequestBody Trabajador trabajador, BindingResult result, @PathVariable String id) {
 		Trabajador trabajadorActual = this.trabajadorService.findById(id);
 		Trabajador trabajadorUpdate = null;
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
 		
 		Map<String, Object> response = new HashMap<>();
 		
@@ -137,6 +176,9 @@ public class TrabajadorRestController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable String id) {
 		Map<String, Object> response = new HashMap<>();
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
 		
 		try {
 			this.trabajadorService.delete(id);
