@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="trabajador")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idTrabajador")
 public class Trabajador implements Serializable{
 	@Id
 	@NotEmpty(message = "no puede estar vacío")
@@ -57,7 +59,6 @@ public class Trabajador implements Serializable{
 	private String email;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "trabajador")
-	@JsonManagedReference
 	private Set<Trabajo> trabajos = new HashSet<Trabajo>(0);
 	
 	public String getIdTrabajador() {

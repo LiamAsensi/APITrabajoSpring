@@ -3,7 +3,8 @@ package edu.carlosliam.trabajos.models.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name="trabajo")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "codTrab")
 public class Trabajo implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
@@ -41,7 +43,6 @@ public class Trabajo implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_trabajador")
-	@JsonBackReference
 	private Trabajador trabajador;
 	
 	public String getCodTrab() {

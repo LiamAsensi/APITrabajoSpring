@@ -6,4 +6,6 @@ import edu.carlosliam.trabajos.models.entity.Trabajador;
 
 public interface ItrabajadorDAO extends CrudRepository<Trabajador, String>{
 	Trabajador findByDni(String dni);
+	
+	Trabajador findByEmail(String email);
 }

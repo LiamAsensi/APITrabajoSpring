@@ -12,6 +12,8 @@ public interface ITrabajadorService {
 	
 	public Trabajador findByDni(String dni);
 	
+	public Trabajador findByEmail(String email);
+	
 	public Trabajador save(Trabajador trabajador);
 	
 	public void delete(String id);
