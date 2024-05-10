@@ -34,6 +34,12 @@ public class TrabajadorServiceImpl implements ITrabajadorService{
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
+	public Trabajador findByEmail(String email) {
+		return trabajadorDAO.findByEmail(email);
+	}
+	
+	@Override
 	@Transactional
 	public Trabajador save(Trabajador trabajador) {
 		return trabajadorDAO.save(trabajador);

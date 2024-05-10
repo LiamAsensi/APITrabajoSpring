@@ -131,6 +131,12 @@ public class TrabajadorRestController {
 						"El trabajador con el DNI: ".concat(trabajador.getDni()).concat(" ya existe"));
 			}
 			
+			// Comprobación de que el email no se encuentra ya en la BBDD
+			if (this.trabajadorService.findByEmail(trabajador.getEmail()) != null) {
+				return createErrorResponse(HttpStatus.CONFLICT, 
+						"El trabajador con el correo: ".concat(trabajador.getEmail().concat(" ya existe")));
+			}
+			
 			trabajadorNuevo = this.trabajadorService.save(trabajador);
 		} catch (DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
