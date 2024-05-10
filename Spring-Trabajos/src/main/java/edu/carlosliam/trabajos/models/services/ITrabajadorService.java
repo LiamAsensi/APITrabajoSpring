@@ -10,6 +10,8 @@ public interface ITrabajadorService {
 	
 	public Trabajador findById(String id);
 	
+	public Trabajador findByDni(String dni);
+	
 	public Trabajador save(Trabajador trabajador);
 	
 	public void delete(String id);

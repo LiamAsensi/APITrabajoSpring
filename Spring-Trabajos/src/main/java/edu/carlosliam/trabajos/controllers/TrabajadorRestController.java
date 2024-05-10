@@ -1,13 +1,12 @@
 package edu.carlosliam.trabajos.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,129 +28,149 @@ import jakarta.validation.Valid;
 
 @CrossOrigin(origins = {"*"})
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = "application/json; charset=UTF-8")
 public class TrabajadorRestController {
 	
 	@Autowired
 	private ITrabajadorService trabajadorService;
 	
-	@GetMapping("/trabajadores")
-	public ResponseEntity<?> index() {
-		List<Trabajador> trabajadores = null;
-		Map<String, Object> response = new HashMap<>();
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-		
-		try {
-			trabajadores = this.trabajadorService.findAll();
-		} catch(DataAccessException e) {
-			response.put("error", true);
-			response.put("errorMessage", "Error al realizar la consulta en la base de datos.");
-			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		response.put("error", false);
-		response.put("result", trabajadores);
-		
-		return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.OK);
+	// Método para crear respuestas de error
+	private ResponseEntity<?> createErrorResponse(HttpStatus status, String errorMessage) {
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    response.put("error", true);
+	    response.put("errorMessage", errorMessage);
+	    
+	    return new ResponseEntity<>(response, status);
 	}
 	
+	// Método para crear respuestas con un resultado correcto
+	private ResponseEntity<?> createResultResponse(HttpStatus status, Object result) {
+		Map<String, Object> response = new HashMap<>();
+		
+		response.put("error", false);
+		response.put("result", result);
+		
+		return new ResponseEntity<>(response, status);
+	}
+	
+	/**
+	 * Servicio que devuelve una lista con el detalle de todos los trabajadores
+	 * @return Una lista con los trabajadores
+	 */
+	@GetMapping("/trabajadores")
+	public ResponseEntity<?> index() {
+		List<Trabajador> trabajadores = new ArrayList<>();
+		
+		try {
+			trabajadores.addAll(this.trabajadorService.findAll());
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error al realizar la consulta en la base de datos.");
+		}
+		
+		return createResultResponse(HttpStatus.OK, trabajadores);
+	}
+	
+	/**
+	 * Servicio para conseguir la información de un trabajador según su ID
+	 * @param id El id del trabajador
+	 * @return La información del trabajador si se encuentra
+	 */
 	@GetMapping("/trabajadores/{id}")
 	public ResponseEntity<?> show(@PathVariable String id) {
 		Trabajador trabajador = null;
-		Map<String, Object> response = new HashMap<>();
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
 		
 		try {
 			trabajador = this.trabajadorService.findById(id);
 		} catch (DataAccessException e) {
-			response.put("errorMessage", "Error al realizar la consulta en la base de datos.");
-			response.put("error", true);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
 		}
 		
+		// Comprobación de que existe un trabajador con el ID de los parámetros
 		if (trabajador == null) {
-			response.put("errorMessage", "El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
-			response.put("error", true);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			return createErrorResponse(HttpStatus.NOT_FOUND,
+					"El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
 		}
 		
-		response.put("error", false);
-		response.put("result", trabajador);
-		
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return createResultResponse(HttpStatus.OK, trabajador);
 	}
 	
+	/**
+	 * Servicio para insertar nuevos trabajadores
+	 * @param trabajador 
+	 * @param result
+	 * @return
+	 */
 	@PostMapping("/trabajadores")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajador trabajador, BindingResult result) {
 		Trabajador trabajadorNuevo = null;
-		Map<String, Object> response = new HashMap<>();
 		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-		
+		// Comprobación de que la petición tiene datos correctos
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
 					.collect(Collectors.toList());
 			
-			response.put("error", true);
-			response.put("errorMessage", String.join(", ", errors));
-			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.BAD_REQUEST);
+			return createErrorResponse(HttpStatus.BAD_REQUEST, String.join(", ", errors));
 		}
 		
 		try {
+			// Comprobación de que el ID no se encuentra ya en la BBDD
 			if (this.trabajadorService.findById(trabajador.getIdTrabajador()) != null) {
-				response.put("error", true);
-				response.put("errorMessage", "El trabajador con el ID: ".concat(trabajador.getIdTrabajador()).concat(" ya existe."));
-				return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.BAD_REQUEST);
+				return createErrorResponse(HttpStatus.CONFLICT,
+						"El trabajador con el ID: ".concat(trabajador.getIdTrabajador()).concat(" ya existe."));
+			}
+			
+			// Comprobación de que el DNI no se encuentra ya en la BBDD
+			if (this.trabajadorService.findByDni(trabajador.getDni()) != null) {
+				return createErrorResponse(HttpStatus.CONFLICT,
+						"El trabajador con el DNI: ".concat(trabajador.getDni()).concat(" ya existe"));
 			}
 			
 			trabajadorNuevo = this.trabajadorService.save(trabajador);
 		} catch (DataAccessException e) {
-			response.put("error", true);
-			response.put("errorMessage", "Error al realizar la inserción en la base de datos: " + e.getLocalizedMessage());
-			return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la inserción en la base de datos.");
 		}
 		
-		response.put("error", false);
-		response.put("result", trabajadorNuevo);
-		
-		return new ResponseEntity<Map<String, Object>>(response, headers, HttpStatus.CREATED);
+		return createResultResponse(HttpStatus.CREATED, trabajadorNuevo);
 	}
 	
+	/**
+	 * Servicio para actualizar un trabajador
+	 * @param trabajador Los datos con la actualización del trabajador
+	 * @param result
+	 * @param id El ID del trabajador que se quiere actualizar
+	 * @return Los nuevos datos del trabajador una vez están actualizados
+	 */
 	@PutMapping("/trabajadores/{id}")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> update(@Valid @RequestBody Trabajador trabajador, BindingResult result, @PathVariable String id) {
-		Trabajador trabajadorActual = this.trabajadorService.findById(id);
 		Trabajador trabajadorUpdate = null;
 		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-		
-		Map<String, Object> response = new HashMap<>();
-		
+		// Comprobación de que la petición tiene datos correctos
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
 					.collect(Collectors.toList());
 			
-			response.put("errores", errors);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-		}
-		
-		if (trabajadorActual == null) {
-			response.put("mensaje", "El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			return createErrorResponse(HttpStatus.BAD_REQUEST, String.join(", ", errors));
 		}
 		
 		try {
+			Trabajador trabajadorActual = this.trabajadorService.findById(id);
+			
+			// Comprobación de que existe un trabajador con el ID de los parámetros
+			if (trabajadorActual == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
+			}
+			
 			trabajadorActual.setNombre(trabajador.getNombre());
 			trabajadorActual.setApellidos(trabajador.getApellidos());
 			trabajadorActual.setEspecialidad(trabajador.getEspecialidad());
@@ -161,35 +180,34 @@ public class TrabajadorRestController {
 			
 			trabajadorUpdate = this.trabajadorService.save(trabajadorActual);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al actualizar el trabajador en la base de datos.");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al actualizar el trabajador en la base de datos.");
 		}
 		
-		response.put("mensaje", "El trabajador ha sido actualizado con éxito.");
-		response.put("trabajador", trabajadorUpdate);
-		
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		return createResultResponse(HttpStatus.CREATED, trabajadorUpdate);
 	}
 	
+	/**
+	 * Servicio para eliminar a un trabajador según su ID
+	 * @param id El ID del trabajador a eliminar
+	 * @return Una respuesta de éxito en caso de que se logre eliminar
+	 */
 	@DeleteMapping("/trabajadores/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable String id) {
-		Map<String, Object> response = new HashMap<>();
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-		
 		try {
+			// Comprobación de que existe un trabajador con el ID de los parámetros
+			if (this.trabajadorService.findById(id) == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
+			}
+			
 			this.trabajadorService.delete(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al eliminar el trabajador de la base de datos.");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al eliminar el trabajador de la base de datos.");
 		}
 		
-		response.put("mensaje", "El trabajador se ha eliminado con éxito.");
-		
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return createResultResponse(HttpStatus.OK, "Trabajador eliminado con éxito.");
 	}
 }

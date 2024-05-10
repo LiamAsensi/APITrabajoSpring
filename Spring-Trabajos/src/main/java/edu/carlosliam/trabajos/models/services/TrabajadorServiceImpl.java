@@ -28,6 +28,12 @@ public class TrabajadorServiceImpl implements ITrabajadorService{
 	}
 	
 	@Override
+	@Transactional(readOnly = true) 
+	public Trabajador findByDni(String dni) {
+		return trabajadorDAO.findByDni(dni);
+	}
+	
+	@Override
 	@Transactional
 	public Trabajador save(Trabajador trabajador) {
 		return trabajadorDAO.save(trabajador);
