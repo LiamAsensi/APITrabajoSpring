@@ -5,11 +5,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.carlosliam.trabajos.models.entity.Trabajador;
 import edu.carlosliam.trabajos.models.entity.Trabajo;
 import edu.carlosliam.trabajos.models.services.ITrabajoService;
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = {"*"})
 @RestController
@@ -79,9 +82,32 @@ public class TrabajoRestController {
 	
 	@PostMapping("/trabajos")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Trabajo create(@RequestBody Trabajo trabajo) {
-		this.trabajoService.save(trabajo);
-		return trabajo;
+	public ResponseEntity<?> create(@Valid @RequestBody Trabajo trabajo, BindingResult result) {
+		Trabajo trabajoNuevo = null;
+		
+		if (result.hasErrors()) {
+			List<String> errors = result.getFieldErrors()
+					.stream()
+					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+					.collect(Collectors.toList());
+			
+			return createErrorResponse(HttpStatus.BAD_REQUEST, String.join(", ", errors));
+		}
+		
+		try {
+			// Comprobación de que el ID no se encuentra ya en la BBDD
+			if (this.trabajoService.findById(trabajo.getCodTrab()) != null) {
+				return createErrorResponse(HttpStatus.CONFLICT,
+						"El trabajo con el ID: ".concat(trabajo.getCodTrab()).concat(" ya existe."));
+			} 
+			
+			trabajoNuevo = this.trabajoService.save(trabajo);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la inserción en la base de datos.");
+		}
+		
+		return createResultResponse(HttpStatus.CREATED, trabajoNuevo);
 	}
 	
 	@PutMapping("/trabajos/{id}")

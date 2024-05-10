@@ -23,8 +23,8 @@ public class TrabajoServiceImpl implements ITrabajoService{
 	
 	@Override
 	@Transactional()
-	public void save(Trabajo trabajo) {
-		trabajoDAO.save(trabajo);
+	public Trabajo save(Trabajo trabajo) {
+		return trabajoDAO.save(trabajo);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package edu.carlosliam.trabajos.models.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -32,11 +33,11 @@ public class Trabajo implements Serializable{
 	
 	@Column(name="fec_ini")
 	@Temporal(TemporalType.DATE)
-	private Date fecIni;
+	private LocalDate fecIni;
 	
 	@Column(name="fec_fin")
 	@Temporal(TemporalType.DATE)
-	private Date fecFin;
+	private LocalDate fecFin;
 	
 	private Long tiempo;
 	private int prioridad;
@@ -69,19 +70,19 @@ public class Trabajo implements Serializable{
 		this.descripcion = descripcion;
 	}
 
-	public Date getFecIni() {
+	public LocalDate getFecIni() {
 		return fecIni;
 	}
 
-	public void setFecIni(Date fecIni) {
+	public void setFecIni(LocalDate fecIni) {
 		this.fecIni = fecIni;
 	}
 
-	public Date getFecFin() {
+	public LocalDate getFecFin() {
 		return fecFin;
 	}
 
-	public void setFecFin(Date fecFin) {
+	public void setFecFin(LocalDate fecFin) {
 		this.fecFin = fecFin;
 	}
 
