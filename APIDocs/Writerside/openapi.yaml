@@ -1,0 +1,232 @@
+openapi: 3.0.2
+servers:
+  - url: /api
+info:
+  description: |-
+    Esta API proporciona un conjunto de endpoints para gestionar trabajadores y trabajos en una empresa.
+    Permite realizar operaciones CRUD en las tablas de 'trabajador' y 'trabajo', así como otras funcionalidades
+    para asignar, finalizar y consultar trabajos. Además, ofrece métodos para obtener información detallada sobre
+    los trabajos realizados por los trabajadores, y facilita la administración de tareas pendientes y finalizadas.
+  version: 1.0.0
+  title: Gestión Hotelera Spring
+  contact:
+    email: liam.alejoasensi@gmail.com
+  license:
+    name: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+    url: 'https://creativecommons.org/publicdomain/zero/1.0/'
+tags:
+  - name: trabajador
+    description: Operaciones sobre los trabajadores
+  - name: trabajo
+    description: Operaciones sobre los trabajos
+paths:
+  /trabajadores:
+    get:
+      tags:
+        - trabajador
+      summary: Obtener listado de los trabajadores
+      description: Obtener el listado completo de todos los trabajadores
+      operationId: getAllTrabajadores
+      responses:
+        '200':
+          description: Devolución del listado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trabajador'
+        '500':
+          description: Error interno del servidor
+    post:
+      tags:
+        - trabajador
+      summary: Crear un trabajador
+      description: Insertar un nuevo trabajador con datos válidos
+      operationId: putTrabajador
+      responses:
+        '201':
+          description: Trabajador creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trabajador'
+        '400':
+          description: Intento de creación con datos inválidos
+        '409':
+          description: Conflicto con ID, DNI o correo
+        '500':
+          description: Error interno del servidor
+      requestBody:
+        description: El trabajador a insertar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trabajador'
+  /trabajadores/{id}:
+    get:
+      tags:
+        - trabajador
+      summary: Obtener trabajador por ID
+      description: Devuelve el detalle de un trabjador según su ID
+      operationId: getTrabajadorById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Datos del trabajador devueltos exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trabajador'
+        '404':
+          description: El trabajador no fue encontrado
+        '500':
+          description: Error interno del servidor
+    put:
+      summary: Actualiza un trabajador
+      description: Busca un trabajador por ID y actualiza sus datos
+      operationId: putTrabajador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Trabajador actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trabajador'
+        '400':
+          description: Intento de actualización con datos inválidos
+        '404':
+          description: El trabajador no fue encontrado
+        '500':
+          description: Error interno del servidor
+    delete:
+      summary: Elimina un trabajador
+      description: Busca un trabajador por ID y lo elimina de la BBDD
+      operationId: deleteTrabajador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trabajador eliminado
+        '404':
+          description: El trabajador no fue encontrado
+        '500':
+          description: Error interno del servidor
+components:
+  schemas:
+    Trabajador:
+      properties:
+        idTrabajador:
+          type: string
+          minLength: 1
+          maxLength: 5
+          example: 2
+        dni:
+          type: string
+          pattern: '^\d{8}[A-HJ-NP-TV-Z]$'
+          example: 12345678A
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Juan
+        apellidos:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Bernal Iborra
+        especialidad:
+          $ref: '#/components/schemas/Especialidad'
+        contraseña:
+          type: string
+          minLength: 2
+          maxLength: 50
+          format: password
+          example: pass1234
+        email:
+          type: string
+          minLength: 2
+          maxLength: 150
+          format: email
+        trabajos:
+          type: array
+          description: Los trabajos del trabajador
+          items:
+            $ref: '#/components/schemas/Trabajo'
+      type: object
+    Trabajo:
+      properties:
+        codTrab:
+          type: string
+          example: T1
+        categoria:
+          $ref: '#/components/schemas/Especialidad'
+        descripcion:
+          type: string
+          example: Limpieza de la habitacion 102
+        fecIni:
+          type: string
+          format: date
+        fecFin:
+          type: string
+          format: date
+          nullable: true
+        tiempo:
+          type: number
+          format: float
+          description: Horas empleadas en el trabajo
+          nullable: true
+          example: 1.5
+        prioridad:
+          type: int
+          format: int32
+          minimum: 1
+          maximum: 4
+          description: Importancia del trabajo (Del 1 al 4)
+          example: 2
+        idTrabajador:
+          type: string
+          description: ID del trabajador asociado al trabajo
+          example: 2
+      type: object
+    Especialidad:
+      type: string
+      enum:
+        - electricidad
+        - limpieza
+        - gestion
+        - fontaneria
+        - carpinteria
+      example: limpieza
+  requestBodies:
+    Trabajador:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Trabajador'
+      description: El trabajador que se quiere insertar/actualizar
+    Trabajo:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Trabajo'
+      description: El trabajo que se quiere insertar/actualizar
