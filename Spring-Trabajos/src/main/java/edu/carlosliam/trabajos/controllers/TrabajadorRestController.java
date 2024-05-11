@@ -104,7 +104,6 @@ public class TrabajadorRestController {
 	 * @return
 	 */
 	@PostMapping("/trabajadores")
-	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajador trabajador, BindingResult result) {
 		Trabajador trabajadorNuevo = null;
 		
@@ -154,7 +153,6 @@ public class TrabajadorRestController {
 	 * @return Los nuevos datos del trabajador una vez están actualizados
 	 */
 	@PutMapping("/trabajadores/{id}")
-	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> update(@Valid @RequestBody Trabajador trabajador, BindingResult result, @PathVariable String id) {
 		Trabajador trabajadorUpdate = null;
 		
@@ -199,7 +197,6 @@ public class TrabajadorRestController {
 	 * @return Una respuesta de éxito en caso de que se logre eliminar
 	 */
 	@DeleteMapping("/trabajadores/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable String id) {
 		try {
 			// Comprobación de que existe un trabajador con el ID de los parámetros
