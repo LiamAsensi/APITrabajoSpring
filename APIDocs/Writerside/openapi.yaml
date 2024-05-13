@@ -21,6 +21,7 @@ tags:
     description: Operaciones sobre los trabajos
 paths:
   /trabajadores:
+    # Servicio GET para conseguir todos los trabajadores
     get:
       tags:
         - trabajador
@@ -33,11 +34,31 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Trabajador'
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajador'
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+    # Servicio POST para guardar un nuevo trabajador
     post:
       tags:
         - trabajador
@@ -50,13 +71,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trabajador'
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajador'
         '400':
           description: Intento de creación con datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: El campo 'DNI' no puede estar vacío
         '409':
           description: Conflicto con ID, DNI o correo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el DNI: 12345678 ya existe'
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la inserción en la base de datos
+        default:
+          description: Error desconocido
       requestBody:
         description: El trabajador a insertar
         required: true

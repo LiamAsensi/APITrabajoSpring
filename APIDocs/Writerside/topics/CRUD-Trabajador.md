@@ -1,23 +1,23 @@
 # CRUD Trabajador
 
-<tabs>
-<tab title="GET">
+<api-schema openapi-path="../openapi.yaml" name="Trabajador"/>
+
+## Obtener todos los trabajadores
+
 <api-endpoint openapi-path="../openapi.yaml" endpoint="/trabajadores" method="get"/>
-</tab>
 
-<tab title="GET by ID">
+## Obtener trabajador por ID
+
 <api-endpoint openapi-path="../openapi.yaml" endpoint="/trabajadores/{id}" method="get"/>
-</tab>
 
-<tab title="POST">
+## Guardar trabajador
+
 <api-endpoint openapi-path="../openapi.yaml" endpoint="/trabajadores" method="post"/>
-</tab>
 
-<tab title="PUT">
+## Actualizar trabajador
+
 <api-endpoint openapi-path="../openapi.yaml" endpoint="/trabajadores/{id}" method="put"/>
-</tab>
 
-<tab title="DELETE">
+## Eliminar trabajador
+
 <api-endpoint openapi-path="../openapi.yaml" endpoint="/trabajadores/{id}" method="delete"/>
-</tab>
-</tabs>

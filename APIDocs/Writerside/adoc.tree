@@ -3,10 +3,11 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="adoc"
-                 name="Spring API Docs"
+                 name="Nesteja Spring API Docs"
                  start-page="api-docs.md">
 
     <toc-element topic="api-docs.md"/>
+    <toc-element topic="Section-Starting-Page.topic"/>
     <toc-element topic="API-quickstart.md"/>
     <toc-element topic="API-reference.md">
         <toc-element toc-title="Trabajador">
