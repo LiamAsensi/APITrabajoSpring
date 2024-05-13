@@ -132,7 +132,7 @@ paths:
       tags:
         - trabajador
       summary: Obtener trabajador por ID
-      description: Devuelve el detalle de un trabjador según su ID
+      description: Devuelve el detalle de un trabajador según su ID
       operationId: getTrabajadorById
       parameters:
         - in: path
@@ -382,7 +382,7 @@ paths:
         - trabajador
       summary: Obtener las tareas finalizados de un usuario
       description: |-
-        Comprueba el id y la contraseña pasadas por parámetros contra la BBDD y devuelve los trabajos finlizados
+        Comprueba el id y la contraseña pasadas por parámetros contra la BBDD y devuelve los trabajos finalizados
         del trabajador con ese id en caso de que el id y la contraseña sean correctos.
       operationId: getPendientes
       parameters:
@@ -507,7 +507,7 @@ components:
           $ref: '#/components/schemas/Especialidad'
         descripcion:
           type: string
-          example: Limpieza de la habitacion 102
+          example: Limpieza de la habitación 102
         fecIni:
           type: string
           format: date
