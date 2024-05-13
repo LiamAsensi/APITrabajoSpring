@@ -2,7 +2,6 @@ package edu.carlosliam.trabajos.models.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -18,7 +17,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="trabajo")
@@ -26,14 +28,17 @@ import jakarta.validation.constraints.NotEmpty;
 public class Trabajo implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@Size(min=1, max=5, message="debe tener entre 1 y 5 caracteres.")
 	@Column(name="cod_trabajo")
 	private String codTrab;
 	
 	@NotEmpty(message="no puede estar vacio.")
+	@Size(min=1, max=50, message="debe tener entre 1 y 50 caracteres.")
 	@Column(nullable=false)
 	private String categoria;
 	
 	@NotEmpty(message="no puede estar vacio.")
+	@Size(min=1, max=500, message="debe tener entre 1 y 500 caracteres.")
 	@Column(nullable=false)
 	private String descripcion;
 	
@@ -45,14 +50,17 @@ public class Trabajo implements Serializable{
 	@Column(name="fec_fin")
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecFin;
-	
+
+	@DecimalMax(value="999.9", message="no puede superar las 999.9h.")
 	private Float tiempo;
 	
 	@NotEmpty(message="no puede estar vacio.")
+	@Max(value=9, message="no puede superar 9.")
 	@Column(nullable=false)
 	private int prioridad;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
+
 	@JoinColumn(name = "id_trabajador")
 	private Trabajador trabajador;
 	

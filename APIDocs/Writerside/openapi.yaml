@@ -334,7 +334,7 @@ paths:
       responses:
         '200':
           description: Listado con los trabajos pendientes devueltos exitosamente
-           content:
+          content:
             application/json:
               schema:
                 type: object
@@ -441,6 +441,8 @@ paths:
                   errorMessage:
                     type: string
                     example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
   /trabajos:
     # Servicio GET para conseguir todos los trabajos
     get:
@@ -540,7 +542,7 @@ paths:
                     example: Error al realizar la inserción en la base de datos
         default:
           description: Error desconocido
-       requestBody:
+        requestBody:
           description: El trabajo a insertar
           required: true
           content:
@@ -594,6 +596,134 @@ paths:
                   errorMessage:
                     type: string
                     example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+
+    # Servicio PUT para actualizar los datos de un trabajador
+    put:
+      summary: Actualiza un trabajo
+      description: Busca un trabajo por ID y actualiza sus datos
+      operationId: putTrabajo
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajo
+          schema:
+            type: string
+      requestBody:
+        description: El trabajo a actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trabajo'
+      responses:
+        '201':
+          description: Trabajo actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '400':
+          description: Intento de actualización con datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: El campo 'id' no puede estar vacío
+        '404':
+          description: El trabajo no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al actualizar el trabajo en la base de datos
+        default:
+          description: Error desconocido
+    # Servicio DELETE para eliminar un trabajador según su ID
+    delete:
+      summary: Elimina un trabajo
+      description: Busca un trabajo por ID y lo elimina de la BBDD
+      operationId: deleteTrabajo
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajo
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trabajo eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: string
+                    example: Trabajo eliminado con éxito
+        '404':
+          description: El trabajo no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al eliminar el trabajo de la base de datos
         default:
           description: Error desconocido
 components:
