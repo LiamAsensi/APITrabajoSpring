@@ -56,6 +56,9 @@ public class TrabajoRestController {
 		return new ResponseEntity<>(response, status);
 	}
 	
+	/*
+	 * Servicio para obtener un listado de todos los trabajos almacenados
+	 */
 	@GetMapping("/trabajos")
 	public ResponseEntity<?> index() {
 		List<Trabajo> trabajo = new ArrayList<>();
@@ -70,11 +73,32 @@ public class TrabajoRestController {
 		return createResultResponse(HttpStatus.OK, trabajo);
 	}
 	
+	
+	/*
+	 * Servicio para obtener un trabajo por su ID pasado por parámetro
+	 */
 	@GetMapping("/trabajos/{id}")
-	public Trabajo show(@PathVariable String id) {
-		return trabajoService.findById(id);
+	public ResponseEntity<?> show(@PathVariable String id) {
+		Trabajo trabajo = null;
+				
+		try {
+			trabajo = this.trabajoService.findById(id);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+		
+		if (trabajo == null) {
+			return createErrorResponse(HttpStatus.NOT_FOUND,
+					"El trabajo con el ID: ".concat(id).concat(" no se ha encontrado."));
+		}
+		
+		return createResultResponse(HttpStatus.OK, trabajo);
 	}
 	
+	/*
+	 * Servicio para insertar un nuevo trabajo en la base de datos.
+	 */
 	@PostMapping("/trabajos")
 	//@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajo trabajo, BindingResult result) {
@@ -106,25 +130,59 @@ public class TrabajoRestController {
 	}
 	
 	@PutMapping("/trabajos/{id}")
-	//@ResponseStatus(HttpStatus.CREATED)
-	public Trabajo update(@RequestBody Trabajo trabajo, @PathVariable String id) {
-		Trabajo currentTrabajo = this.trabajoService.findById(id);
-		currentTrabajo.setCategoria(trabajo.getCategoria());
-		currentTrabajo.setDescripcion(trabajo.getDescripcion());
-		currentTrabajo.setFecFin(trabajo.getFecFin());
-		currentTrabajo.setFecIni(trabajo.getFecIni());
-		currentTrabajo.setPrioridad(trabajo.getPrioridad());
-		currentTrabajo.setTiempo(trabajo.getTiempo());
-		currentTrabajo.setTrabajador(trabajo.getTrabajador());
-		this.trabajoService.save(currentTrabajo);
-		return currentTrabajo;
+	public ResponseEntity<?> update(@Valid @RequestBody Trabajo trabajo, BindingResult result, @PathVariable String id) {
+		Trabajo trabajoUpdate = null;
+		
+		if(result.hasErrors()) {
+			List<String> errors = result.getFieldErrors()
+					.stream()
+					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+					.collect(Collectors.toList());
+			
+			return createErrorResponse(HttpStatus.BAD_REQUEST, String.join(", ", errors));
+		}
+		
+		try {
+			Trabajo trabajoActual = this.trabajoService.findById(id);
+			
+			if (trabajoActual == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajo con el ID: ".concat(id).concat(" no se ha encontrado."));
+			}
+			
+			trabajoActual.setCategoria(trabajo.getCategoria());
+			trabajoActual.setDescripcion(trabajo.getDescripcion());
+			trabajoActual.setFecFin(trabajo.getFecFin());
+			trabajoActual.setFecIni(trabajo.getFecIni());
+			trabajoActual.setPrioridad(trabajo.getPrioridad());
+			trabajoActual.setTiempo(trabajo.getTiempo());
+			trabajoActual.setTrabajador(trabajo.getTrabajador());
+			
+			trabajoUpdate = this.trabajoService.save(trabajoActual);	
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al actualizar el trabajo en la base de datos.");
+		}		
+		
+		return createResultResponse(HttpStatus.CREATED, trabajoUpdate);
 	}
 	
 	@DeleteMapping("/trabajos/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable String id) {
-		Trabajo currentTrabajo = this.trabajoService.findById(id);
-		this.trabajoService.delete(currentTrabajo);
+	public ResponseEntity<?> delete(@PathVariable String id) {
+		try {
+			Trabajo currentTrabajo = this.trabajoService.findById(id);
+			
+			if (currentTrabajo == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajo con el ID: ".concat(id).concat(" no se ha encontrado."));
+			}
+			
+			this.trabajoService.delete(id);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al eliminar el trabajo de la base de datos.");
+		}
+		
+		return createResultResponse(HttpStatus.OK, "Trabajo eliminado con éxito.");
 	}
-	
 }

@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name="trabajo")
@@ -28,10 +29,16 @@ public class Trabajo implements Serializable{
 	@Column(name="cod_trabajo")
 	private String codTrab;
 	
+	@NotEmpty(message="no puede estar vacio.")
+	@Column(nullable=false)
 	private String categoria;
+	
+	@NotEmpty(message="no puede estar vacio.")
+	@Column(nullable=false)
 	private String descripcion;
 	
-	@Column(name="fec_ini")
+	@NotEmpty(message="no puede estar vacio.")
+	@Column(name="fec_ini", nullable=false)
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecIni;
 	
@@ -39,7 +46,10 @@ public class Trabajo implements Serializable{
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecFin;
 	
-	private Long tiempo;
+	private Float tiempo;
+	
+	@NotEmpty(message="no puede estar vacio.")
+	@Column(nullable=false)
 	private int prioridad;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -86,11 +96,11 @@ public class Trabajo implements Serializable{
 		this.fecFin = fecFin;
 	}
 
-	public Long getTiempo() {
+	public Float getTiempo() {
 		return tiempo;
 	}
 
-	public void setTiempo(Long tiempo) {
+	public void setTiempo(Float tiempo) {
 		this.tiempo = tiempo;
 	}
 
