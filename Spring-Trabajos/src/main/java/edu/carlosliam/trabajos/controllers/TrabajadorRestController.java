@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.carlosliam.trabajos.models.entity.Trabajador;
@@ -118,6 +117,13 @@ public class TrabajadorRestController {
 		}
 		
 		try {
+			/*
+			 * Esta forma de comprobar unicidad NO es perfecta porque no hay forma de
+			 * garantizar que mientras se ejecuta no se ha insertado otro registro en
+			 * la BBDD con el dato que se está comprobando, pero funcionará casi siempre.
+			 * Además si no se hace el servidor peta.
+			 */
+			
 			// Comprobación de que el ID no se encuentra ya en la BBDD
 			if (this.trabajadorService.findById(trabajador.getIdTrabajador()) != null) {
 				return createErrorResponse(HttpStatus.CONFLICT,
@@ -127,13 +133,18 @@ public class TrabajadorRestController {
 			// Comprobación de que el DNI no se encuentra ya en la BBDD
 			if (this.trabajadorService.findByDni(trabajador.getDni()) != null) {
 				return createErrorResponse(HttpStatus.CONFLICT,
-						"El trabajador con el DNI: ".concat(trabajador.getDni()).concat(" ya existe"));
+						"El trabajador con el DNI: ".concat(trabajador.getDni()).concat(" ya existe."));
+			}
+			
+			if (!Trabajador.validarDni(trabajador.getDni())) {
+				return createErrorResponse(HttpStatus.BAD_REQUEST, 
+						"El DNI no es válido.");
 			}
 			
 			// Comprobación de que el email no se encuentra ya en la BBDD
 			if (this.trabajadorService.findByEmail(trabajador.getEmail()) != null) {
 				return createErrorResponse(HttpStatus.CONFLICT, 
-						"El trabajador con el correo: ".concat(trabajador.getEmail().concat(" ya existe")));
+						"El trabajador con el correo: ".concat(trabajador.getEmail().concat(" ya existe.")));
 			}
 			
 			trabajadorNuevo = this.trabajadorService.save(trabajador);

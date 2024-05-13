@@ -3,14 +3,19 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="adoc"
-                 name="Spring API Docs"
+                 name="Nesteja API Docs"
                  start-page="api-docs.md">
 
     <toc-element topic="api-docs.md"/>
+    <toc-element topic="Section-Starting-Page.topic"/>
     <toc-element topic="API-quickstart.md"/>
     <toc-element topic="API-reference.md">
-        <toc-element toc-title="Trabajador">
-            <toc-element topic="CRUD-Trabajador.md"/>
+        <toc-element topic="Trabajador.md">
+            <toc-element topic="Obtener-todos-los-trabajadores.md"/>
+            <toc-element topic="Obtener-trabajador-por-ID.md"/>
+            <toc-element topic="Guardar-trabajador.md"/>
+            <toc-element topic="Actualizar-trabajador.md"/>
+            <toc-element topic="Eliminar-trabajador.md"/>
         </toc-element>
     </toc-element>
     <toc-element topic="Changes.md"/>

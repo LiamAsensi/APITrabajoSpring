@@ -6,4 +6,8 @@
         <accepts>page.html</accepts>
     </rule>
     -->
+    <rule id="3bd19ccc">
+        <description>Created after removal of "CRUD Trabajador" from Nesteja API Docs</description>
+        <accepts>CRUD-Trabajador.html</accepts>
+    </rule>
 </rules>

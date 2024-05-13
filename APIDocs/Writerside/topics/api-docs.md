@@ -1,36 +1,45 @@
 # API Overview
 
-<!-- This document provides an introduction into your API. -->
+<section-starting-page>
+<title>Section starting page title</title>
+<description>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+condimentum feugiat sagittis.
+</description>
 
-## Introduction
+<spotlight>
+<a href="Changes.md" description="Sed condimentum feugiat sagittis" type="start"/>
+<a href="Changes.md" description="Sed condimentum feugiat sagittis" type="search"/>
+</spotlight>
 
-Provide a brief introduction to the API, explaining its purpose and scope.
+<primary>
+<title>Main group</title>
+<a href="Changes.md"
+   description="Sed condimentum feugiat sagittis"/>
+</primary>
 
-## What you can do using this API
+<secondary>
+<title>Highlighted group</title>
+<a href="Changes.md"
+   description="Sed condimentum feugiat sagittis"/>
+</secondary>
 
-Provide some simple usage examples to help users get started quickly.
+<misc>
+<cards>
+<title>Custom cards</title>
+<a href="Changes.md"
+   description="Sed condimentum feugiat sagittis"/>
+</cards>
 
-## Authentication
-
-Explain the authentication methods and requirements for accessing the API.
-
-## Base URL
-
-Specify the base URL for making API requests.
-
-If you have more than one environment (production and sandbox) explain the difference and provide links to both.
-
-## Rate Limiting
-
-Explain any rate limiting policies, if applicable.
-
-## Error Handling
-
-Describe the API's error response format and provide common error codes and their meanings.
-
-## Versioning
-
-Explain how the API versioning works and how to specify the desired API version in requests.
+<links narrow="true">
+<group>
+    <title>Custom links</title>
+    <a href="Changes.md"
+       description="Sed condimentum feugiat sagittis"/>
+</group>
+</links>
+</misc>
+</section-starting-page>
 
 <seealso>
 

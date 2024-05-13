@@ -1,0 +1,8 @@
+<buildprofiles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/build-profiles.xsd">
+    <variables>
+        <primary-color>ruby</primary-color>
+        <custom-favicons>images/nesteja_icon.png</custom-favicons>
+        <header-logo>images/nesteja.png</header-logo>
+    </variables>
+</buildprofiles>

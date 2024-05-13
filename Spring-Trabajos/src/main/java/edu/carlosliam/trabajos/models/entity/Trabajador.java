@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
@@ -15,51 +16,65 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="trabajador")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idTrabajador")
 public class Trabajador implements Serializable{
+	@JsonIgnore
+	private static final String DNI_CHARS = "TRWAGMYFPDXBNJZSQVHLCKE";
+	
+	@JsonIgnore
+	private static final String NIE_CHARS = "XYZ";
+	
+    @JsonIgnore
+    private static final String DNI_REGEX = "^(?:[0-9]{8}[" + DNI_CHARS + "]|[XYZ][0-9]{7}[" + DNI_CHARS + "])$";
+    
+    @JsonIgnore
+    private static final String ESPECIALIDAD_REGEX = "^(electricidad|limpieza|gestion|fontaneria|carpinteria)$";
+	
 	@Id
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(max = 5, message = "el tamaño solo puede ser hasta 5 caracteres")
+	@Size(max = 5, message = "debe tener un tamaño de hasta 5 caracteres")
 	@Column(name="id_trabajador")
 	private String idTrabajador;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 8, max = 9, message = "el tamaño debe ser entre 8 y 9 caracteres")
+	@Pattern(regexp = DNI_REGEX, message = "no tiene un formato válido")
 	@Column(nullable = false, unique = true)
 	private String dni;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 100, message = "el tamaño debe ser entre 2 y 100 caracteres")
+	@Size(min = 2, max = 100, message = "debe tener un tamaño entre 2 y 100 caracteres")
 	@Column(nullable = false)
 	private String nombre;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 100, message = "el tamaño debe ser entre 2 y 100 caracteres")
+	@Size(min = 2, max = 100, message = "debe tener un tamaño entre 2 y 100 caracteres")
 	@Column(nullable = false)
 	private String apellidos;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 50, message = "el tamaño debe ser entre 2 y 50 caracteres")
+	@Pattern(regexp = ESPECIALIDAD_REGEX, message = "no tiene un valor válido")
 	@Column(nullable = false)
 	private String especialidad;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 50, message = "el tamaño debe ser entre 2 y 50 caracteres")
+	@Size(min = 2, max = 100, message = "debe tener un tamaño entre 2 y 100 caracteres")
 	@Column(nullable = false)
 	private String contraseña;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 150, message = "el tamaño debe ser entre 2 y 150 caracteres")
 	@Column(nullable = false, unique = true)
 	@Email(message = "no es una dirección de correo bien formada")
 	private String email;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "trabajador")
 	private Set<Trabajo> trabajos = new HashSet<Trabajo>(0);
+	
+	private static final long serialVersionUID = 1L;
 	
 	public String getIdTrabajador() {
 		return idTrabajador;
@@ -121,5 +136,23 @@ public class Trabajador implements Serializable{
 		this.trabajos = trabajos;
 	}
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * Valida un DNI (Ya sea NIF o NIE)
+	 * @param dni El DNI que se quiere validar
+	 * @return Verdadero si es un DNI válido, falso si no lo es
+	 */
+	public static boolean validarDni(String dni) {
+		return NIE_CHARS.indexOf(dni.charAt(0)) >= 0 ? validarNie(dni) : validarNif(dni);
+	}
+	
+	private static boolean validarNif(String nif) {
+		int parteNumerica = Integer.parseInt(nif.substring(0, 8));
+		char digitoControl = nif.charAt(8);
+		
+		return DNI_CHARS.charAt(parteNumerica % 23) == digitoControl;
+	}
+	
+	private static boolean validarNie(String nie) {
+		return validarNif(nie.replace('X', '0').replace('Y', '1').replace('Z', '2'));
+	}
 }
