@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.carlosliam.trabajos.models.entity.Trabajador;
+import edu.carlosliam.trabajos.models.entity.Trabajo;
 import edu.carlosliam.trabajos.models.services.ITrabajadorService;
 import jakarta.validation.Valid;
 
@@ -51,6 +52,47 @@ public class TrabajadorRestController {
 		response.put("result", result);
 		
 		return new ResponseEntity<>(response, status);
+	}
+	
+	// Método para hacer login y obtener los trabajos finalizados/pendientes
+	private ResponseEntity<?> login(String id, String pass, boolean pendientes) {
+		Trabajador trabajador = null;
+		
+		try {
+			// Comprobación de que existe un trabajador con el ID de los parámetros
+			trabajador = this.trabajadorService.findById(id);
+			
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.UNAUTHORIZED,
+						"Login o password incorrecto");
+			}
+			
+			if (!trabajador.getContraseña().equals(pass)) {
+				return createErrorResponse(HttpStatus.UNAUTHORIZED,
+						"Login o password incorrecto");
+			}
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al eliminar el trabajador de la base de datos.");
+		}
+		
+		List<Trabajo> trabajosPendientes = new ArrayList<>();
+		
+		if (pendientes) {
+			trabajosPendientes = 
+					trabajador.getTrabajos()
+					.stream()
+					.filter(t -> t.getFecFin() == null)
+					.toList();
+		} else {
+			trabajosPendientes = 
+					trabajador.getTrabajos()
+					.stream()
+					.filter(t -> t.getFecFin() != null)
+					.toList();
+		}
+		
+		return createResultResponse(HttpStatus.OK, trabajosPendientes);
 	}
 	
 	/**
@@ -223,5 +265,15 @@ public class TrabajadorRestController {
 		}
 		
 		return createResultResponse(HttpStatus.OK, "Trabajador eliminado con éxito.");
+	}
+	
+	@GetMapping("/trabajadores/{id}/{pass}/pendientes")
+	public ResponseEntity<?> getPendientes(@PathVariable String id, @PathVariable String pass) {
+		return login(id, pass, true);
+	}
+	
+	@GetMapping("/trabajadores/{id}/{pass}/finalizados")
+	public ResponseEntity<?> getFinalizados(@PathVariable String id, @PathVariable String pass) {
+		return login(id, pass, false);
 	}
 }
