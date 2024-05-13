@@ -35,7 +35,7 @@ public class TrabajoServiceImpl implements ITrabajoService{
 	
 	@Override
 	@Transactional()
-	public void delete(Trabajo trabajo) {
-		trabajoDAO.delete(trabajo);
+	public void delete(String id) {
+		trabajoDAO.deleteById(id);
 	}
 }

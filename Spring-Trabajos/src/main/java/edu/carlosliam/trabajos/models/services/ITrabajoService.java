@@ -12,5 +12,5 @@ public interface ITrabajoService {
 
 	public Trabajo findById(String id);
 	
-	public void delete(Trabajo trabajo);
+	public void delete(String id);
 }

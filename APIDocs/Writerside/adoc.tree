@@ -9,6 +9,13 @@
     <toc-element topic="api-docs.md"/>
     <toc-element topic="API-quickstart.md"/>
     <toc-element topic="API-reference.md">
+        <toc-element topic="Trabajo.md">
+            <toc-element topic="Obtener-todos-los-trabajos.md"/>
+            <toc-element topic="Obtener-trabajo-por-ID.md"/>
+            <toc-element topic="Guardar-trabajo.md"/>
+            <toc-element topic="Actualizar-trabajo.md"/>
+            <toc-element topic="Eliminar-trabajo.md"/>
+        </toc-element>
         <toc-element topic="Trabajador.md">
             <toc-element topic="Obtener-todos-los-trabajadores.md"/>
             <toc-element topic="Obtener-trabajador-por-ID.md"/>

@@ -334,7 +334,7 @@ paths:
       responses:
         '200':
           description: Listado con los trabajos pendientes devueltos exitosamente
-          content:
+           content:
             application/json:
               schema:
                 type: object
@@ -373,7 +373,7 @@ paths:
                     example: true
                   errorMessage:
                     type: string
-                    example: Error al eliminar el trabajador de la base de datos
+                    example: Error al realizar la consulta en la base de datos
         default:
           description: Error desconocido
   /trabajadores/{id}/{pass}/finalizados:
@@ -440,7 +440,160 @@ paths:
                     example: true
                   errorMessage:
                     type: string
-                    example: Error al eliminar el trabajador de la base de datos
+                    example: Error al realizar la consulta en la base de datos
+  /trabajos:
+    # Servicio GET para conseguir todos los trabajos
+    get:
+      tags:
+        - trabajo
+      summary: Obtener listado de los trabajos
+      description: Obtener el listado completo de todos los trabajos
+      operationId: getAllTrabajos
+      responses:
+        '200':
+          description: Devolución del listado con los trabajos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajo'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+    # Servicio POST para guardar un nuevo trabajo
+    post:
+      tags:
+        - trabajo
+      summary: Crear un trabajo
+      description: Insertar un nuevo trabajo con datos válidos
+      operationId: putTrabajo
+      responses:
+        '201':
+          description: Trabajo creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '400':
+          description: Intento de creación con datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: El campo 'id' no puede estar vacío
+        '409':
+          description: Conflicto con ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el ID: 2 ya existe'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la inserción en la base de datos
+        default:
+          description: Error desconocido
+       requestBody:
+          description: El trabajo a insertar
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trabajo'  
+  /trabajos/{id}:
+    # Servicio GET para conseguir los datos de un trabajo por ID
+    get:
+      tags:
+        - trabajo
+      summary: Obtener trabajo por ID
+      description: Devuelve el detalle de un trabajo según su ID
+      operationId: getTrabajoById
+      responses:
+        '200':
+          description: Datos del trabajo devueltos exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '404':
+          description: El trabajo no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: 3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
         default:
           description: Error desconocido
 components:
@@ -475,7 +628,7 @@ components:
           maxLength: 100
           description: |-
             Almacena los apellidos del trabajador. Debe ser una cadena que ocupe entre 2 y 100 caracteres.
-          example: Bernal Iborra
+          example: Bernal Ibarra
         especialidad:
           $ref: '#/components/schemas/Especialidad'
         contraseña:
