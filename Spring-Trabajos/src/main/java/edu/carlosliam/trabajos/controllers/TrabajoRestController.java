@@ -56,11 +56,6 @@ public class TrabajoRestController {
 		return new ResponseEntity<>(response, status);
 	}
 	
-	/*@GetMapping("/trabajos")
-	public List<Trabajo> index() {
-		return trabajoService.findAll();
-	}*/
-	
 	@GetMapping("/trabajos")
 	public ResponseEntity<?> index() {
 		List<Trabajo> trabajo = new ArrayList<>();
@@ -81,7 +76,7 @@ public class TrabajoRestController {
 	}
 	
 	@PostMapping("/trabajos")
-	@ResponseStatus(HttpStatus.CREATED)
+	//@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajo trabajo, BindingResult result) {
 		Trabajo trabajoNuevo = null;
 		
@@ -111,7 +106,7 @@ public class TrabajoRestController {
 	}
 	
 	@PutMapping("/trabajos/{id}")
-	@ResponseStatus(HttpStatus.CREATED)
+	//@ResponseStatus(HttpStatus.CREATED)
 	public Trabajo update(@RequestBody Trabajo trabajo, @PathVariable String id) {
 		Trabajo currentTrabajo = this.trabajoService.findById(id);
 		currentTrabajo.setCategoria(trabajo.getCategoria());
