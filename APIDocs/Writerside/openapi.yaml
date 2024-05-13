@@ -132,7 +132,7 @@ paths:
       tags:
         - trabajador
       summary: Obtener trabajador por ID
-      description: Devuelve el detalle de un trabador según su ID
+      description: Devuelve el detalle de un trabajador según su ID
       operationId: getTrabajadorById
       parameters:
         - in: path
@@ -309,7 +309,138 @@ paths:
                     example: Error al eliminar el trabajador de la base de datos
         default:
           description: Error desconocido
-
+  /trabajadores/{id}/{pass}/pendientes:
+    get:
+      tags:
+        - trabajador
+      summary: Obtener las tareas pendientes de un usuario
+      description: |-
+        Comprueba el id y la contraseña pasadas por parámetros contra la BBDD y devuelve los trabajos pendientes
+        del trabajador con ese id en caso de que el id y la contraseña sean correctos.
+      operationId: getPendientes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+        - in: path
+          name: pass
+          required: true
+          description: Contraseña del trabajador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listado con los trabajos pendientes devueltos exitosamente
+           content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajo'
+        '401':
+          description: |-
+            Login incorrecto en caso de que el ID no exista en la BBDD o, si existiera, en caso de que la contraseña
+            no coincida. No se especifica.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Login o password incorrecto
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+  /trabajadores/{id}/{pass}/finalizados:
+    get:
+      tags:
+        - trabajador
+      summary: Obtener las tareas finalizados de un usuario
+      description: |-
+        Comprueba el id y la contraseña pasadas por parámetros contra la BBDD y devuelve los trabajos finalizados
+        del trabajador con ese id en caso de que el id y la contraseña sean correctos.
+      operationId: getPendientes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+        - in: path
+          name: pass
+          required: true
+          description: Contraseña del trabajador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listado con los trabajos finalizados devueltos exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajo'
+        '401':
+          description: |-
+            Login incorrecto en caso de que el ID no exista en la BBDD o, si existiera, en caso de que la contraseña
+            no coincida. No se especifica.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Login o password incorrecto
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
   /trabajos:
     # Servicio GET para conseguir todos los trabajos
     get:
@@ -348,7 +479,6 @@ paths:
                     example: Error al realizar la consulta en la base de datos
         default:
           description: Error desconocido
-
     # Servicio POST para guardar un nuevo trabajo
     post:
       tags:
@@ -394,7 +524,7 @@ paths:
                     example: true
                   errorMessage:
                     type: string
-                    example: 'El trabajador con el ID: 2 ya existe'
+                    example: 'El trabajo con el ID: 2 ya existe'
         '500':
           description: Error interno del servidor
           content:
@@ -410,14 +540,13 @@ paths:
                     example: Error al realizar la inserción en la base de datos
         default:
           description: Error desconocido
-      requestBody:
-        description: El trabajo a insertar
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Trabajo'
-
+       requestBody:
+          description: El trabajo a insertar
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trabajo'  
   /trabajos/{id}:
     # Servicio GET para conseguir los datos de un trabajo por ID
     get:
@@ -426,13 +555,6 @@ paths:
       summary: Obtener trabajo por ID
       description: Devuelve el detalle de un trabajo según su ID
       operationId: getTrabajoById
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID del trabajo
-          schema:
-            type: string
       responses:
         '200':
           description: Datos del trabajo devueltos exitosamente
@@ -538,7 +660,7 @@ components:
           $ref: '#/components/schemas/Especialidad'
         descripcion:
           type: string
-          example: Limpieza de la habitacion 102
+          example: Limpieza de la habitación 102
         fecIni:
           type: string
           format: date

@@ -76,23 +76,13 @@ public class TrabajadorRestController {
 					"Error al eliminar el trabajador de la base de datos.");
 		}
 		
-		List<Trabajo> trabajosPendientes = new ArrayList<>();
+		List<Trabajo> trabajos = trabajador
+				.getTrabajos()
+				.stream()
+				.filter(t -> pendientes ? t.getFecFin() == null : t.getFecFin() != null)
+				.toList();
 		
-		if (pendientes) {
-			trabajosPendientes = 
-					trabajador.getTrabajos()
-					.stream()
-					.filter(t -> t.getFecFin() == null)
-					.toList();
-		} else {
-			trabajosPendientes = 
-					trabajador.getTrabajos()
-					.stream()
-					.filter(t -> t.getFecFin() != null)
-					.toList();
-		}
-		
-		return createResultResponse(HttpStatus.OK, trabajosPendientes);
+		return createResultResponse(HttpStatus.OK, trabajos);
 	}
 	
 	/**
