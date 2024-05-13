@@ -194,6 +194,13 @@ paths:
           description: ID del trabajador
           schema:
             type: string
+      requestBody:
+        description: El trabajador a actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trabajador'
       responses:
         '201':
           description: Trabajador actualizado

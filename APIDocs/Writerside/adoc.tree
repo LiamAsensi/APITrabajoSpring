@@ -7,7 +7,6 @@
                  start-page="api-docs.md">
 
     <toc-element topic="api-docs.md"/>
-    <toc-element topic="Section-Starting-Page.topic"/>
     <toc-element topic="API-quickstart.md"/>
     <toc-element topic="API-reference.md">
         <toc-element topic="Trabajador.md">
@@ -19,4 +18,5 @@
         </toc-element>
     </toc-element>
     <toc-element topic="Changes.md"/>
+    <toc-element topic="Section-Starting-Page.topic"/>
 </instance-profile>
