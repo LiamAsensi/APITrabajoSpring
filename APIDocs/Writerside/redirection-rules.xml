@@ -10,4 +10,8 @@
         <description>Created after removal of "CRUD Trabajador" from Nesteja API Docs</description>
         <accepts>CRUD-Trabajador.html</accepts>
     </rule>
+    <rule id="2c704b6a">
+        <description>Created after removal of "Empty MD Topic" from Nesteja API Docs</description>
+        <accepts>Empty-MD-Topic.html</accepts>
+    </rule>
 </rules>
