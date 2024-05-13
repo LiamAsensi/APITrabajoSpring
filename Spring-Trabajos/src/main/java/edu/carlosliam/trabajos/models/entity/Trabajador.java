@@ -62,12 +62,11 @@ public class Trabajador implements Serializable{
 	private String especialidad;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 50, message = "debe tener un tamaño entre 2 y 50 caracteres")
+	@Size(min = 2, max = 100, message = "debe tener un tamaño entre 2 y 100 caracteres")
 	@Column(nullable = false)
 	private String contraseña;
 	
 	@NotEmpty(message = "no puede estar vacío")
-	@Size(min = 2, max = 150, message = "debe tener un tamaño entre 2 y 150 caracteres")
 	@Column(nullable = false, unique = true)
 	@Email(message = "no es una dirección de correo bien formada")
 	private String email;

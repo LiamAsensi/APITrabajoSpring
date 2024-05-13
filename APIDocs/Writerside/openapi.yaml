@@ -10,7 +10,7 @@ info:
   version: 1.0.0
   title: Gestión Hotelera Spring
   contact:
-    email: liam.alejoasensi@gmail.com
+    email: liam.alejoasensi@gmail.com, karlos.riverog@gmail.com
   license:
     name: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
     url: 'https://creativecommons.org/publicdomain/zero/1.0/'
@@ -30,7 +30,7 @@ paths:
       operationId: getAllTrabajadores
       responses:
         '200':
-          description: Devolución del listado
+          description: Devolución del listado con los trabajadores
           content:
             application/json:
               schema:
@@ -90,7 +90,7 @@ paths:
                     example: true
                   errorMessage:
                     type: string
-                    example: El campo 'DNI' no puede estar vacío
+                    example: El campo 'dni' no puede estar vacío
         '409':
           description: Conflicto con ID, DNI o correo
           content:
@@ -127,6 +127,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Trabajador'
   /trabajadores/{id}:
+    # Servicio GET para conseguir los datos de un trabajador por ID
     get:
       tags:
         - trabajador
@@ -146,11 +147,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trabajador'
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajador'
         '404':
           description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el id: 3 no se ha encontrado'
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+    # Servicio PUT para actualizar los datos de un trabajador
     put:
       summary: Actualiza un trabajador
       description: Busca un trabajador por ID y actualiza sus datos
@@ -168,13 +200,55 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trabajador'
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajador'
         '400':
           description: Intento de actualización con datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: El campo 'dni' no puede estar vacío
         '404':
           description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el id: 3 no se ha encontrado'
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al actualizar el trabajador en la base de datos
+        default:
+          description: Error desconocido
+    # Servicio DELETE para eliminar un trabajador según su ID
     delete:
       summary: Elimina un trabajador
       description: Busca un trabajador por ID y lo elimina de la BBDD
@@ -189,10 +263,45 @@ paths:
       responses:
         '200':
           description: Trabajador eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: string
+                    example: Trabajador eliminado con éxito
         '404':
           description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el id: 3 no se ha encontrado'
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al eliminar el trabajador de la base de datos
+        default:
+          description: Error desconocido
 components:
   schemas:
     Trabajador:
@@ -201,37 +310,50 @@ components:
           type: string
           minLength: 1
           maxLength: 5
+          description: |-
+            Este campo almacena el ID del trabajador y actúa como su clave primaria. Debe ser una cadena que ocupe
+            entre 1 y 5 caracteres.
           example: 2
         dni:
           type: string
-          pattern: '^\d{8}[A-HJ-NP-TV-Z]$'
+          pattern: '^(?:[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$'
+          description: |-
+            Almacena el DNI del trabajador. Debe ser un DNI válido (Ya sea NIE o NIF) y no puede encontrarse en otro
+            trabajador.
           example: 12345678A
         nombre:
           type: string
           minLength: 2
           maxLength: 100
+          description: |-
+            Almacena el nombre del trabajador. Debe ser una cadena que ocupe entre 2 y 100 caracteres.
           example: Juan
         apellidos:
           type: string
           minLength: 2
           maxLength: 100
+          description: |-
+            Almacena los apellidos del trabajador. Debe ser una cadena que ocupe entre 2 y 100 caracteres.
           example: Bernal Iborra
         especialidad:
           $ref: '#/components/schemas/Especialidad'
         contraseña:
           type: string
-          minLength: 2
-          maxLength: 50
+          minLength: 4
           format: password
+          description: |-
+            Almacena la contraseña del trabajador de forma encriptada.
           example: pass1234
         email:
           type: string
-          minLength: 2
           maxLength: 150
           format: email
+          description: |-
+            Almacena el email del trabajador. Puede ocupar como máximo 150 caracteres.
         trabajos:
           type: array
-          description: Los trabajos del trabajador
+          description: |-
+            Almacena un array con los trabajos hechos y por hacer del trabajador. Puede estar vacío.
           items:
             $ref: '#/components/schemas/Trabajo'
       type: object
