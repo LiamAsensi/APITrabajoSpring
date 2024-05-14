@@ -17,17 +17,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name="trabajo")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "codTrab")
 public class Trabajo implements Serializable{
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	@Size(min=1, max=5, message="debe tener entre 1 y 5 caracteres.")
 	@Column(name="cod_trabajo")
 	private String codTrab;
@@ -36,13 +32,13 @@ public class Trabajo implements Serializable{
 	@Size(min=1, max=50, message="debe tener entre 1 y 50 caracteres.")
 	@Column(nullable=false)
 	private String categoria;
-	
+
 	@NotEmpty(message="no puede estar vacio.")
 	@Size(min=1, max=500, message="debe tener entre 1 y 500 caracteres.")
 	@Column(nullable=false)
 	private String descripcion;
-	
-	@NotEmpty(message="no puede estar vacio.")
+
+	@NotNull(message="no puede estar vacio.")
 	@Column(name="fec_ini", nullable=false)
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecIni;
@@ -54,7 +50,7 @@ public class Trabajo implements Serializable{
 	@DecimalMax(value="999.9", message="no puede superar las 999.9h.")
 	private Float tiempo;
 	
-	@NotEmpty(message="no puede estar vacio.")
+	@NotNull(message="no puede estar vacio.")
 	@Max(value=9, message="no puede superar 9.")
 	@Column(nullable=false)
 	private int prioridad;
