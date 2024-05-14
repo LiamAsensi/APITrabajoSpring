@@ -33,7 +33,7 @@ public class TrabajadorRestController {
 	
 	@Autowired
 	private ITrabajadorService trabajadorService;
-	
+
 	// Método para crear respuestas de error
 	private ResponseEntity<?> createErrorResponse(HttpStatus status, String errorMessage) {
 	    Map<String, Object> response = new HashMap<>();
@@ -56,7 +56,7 @@ public class TrabajadorRestController {
 	
 	// Método para hacer login y obtener los trabajos finalizados/pendientes
 	private ResponseEntity<?> login(String id, String pass, boolean pendientes) {
-		Trabajador trabajador = null;
+		Trabajador trabajador;
 		
 		try {
 			// Comprobación de que existe un trabajador con el ID de los parámetros
@@ -79,7 +79,7 @@ public class TrabajadorRestController {
 		List<Trabajo> trabajos = trabajador
 				.getTrabajos()
 				.stream()
-				.filter(t -> pendientes ? t.getFecFin() == null : t.getFecFin() != null)
+				.filter(t -> pendientes == (t.getFecFin() == null))
 				.toList();
 		
 		return createResultResponse(HttpStatus.OK, trabajos);
@@ -91,10 +91,10 @@ public class TrabajadorRestController {
 	 */
 	@GetMapping("/trabajadores")
 	public ResponseEntity<?> index() {
-		List<Trabajador> trabajadores = new ArrayList<>();
+		List<Trabajador> trabajadores;
 		
 		try {
-			trabajadores.addAll(this.trabajadorService.findAll());
+			trabajadores = new ArrayList<>(this.trabajadorService.findAll());
 		} catch(DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
 					"Error al realizar la consulta en la base de datos.");
@@ -110,7 +110,7 @@ public class TrabajadorRestController {
 	 */
 	@GetMapping("/trabajadores/{id}")
 	public ResponseEntity<?> show(@PathVariable String id) {
-		Trabajador trabajador = null;
+		Trabajador trabajador;
 		
 		try {
 			trabajador = this.trabajadorService.findById(id);
@@ -130,13 +130,12 @@ public class TrabajadorRestController {
 	
 	/**
 	 * Servicio para insertar nuevos trabajadores
-	 * @param trabajador 
-	 * @param result
-	 * @return
+	 * @param trabajador El trabajador que se quiere insertar
+	 * @return Los datos del trabajador insertado sí se inserta correctamente
 	 */
 	@PostMapping("/trabajadores")
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajador trabajador, BindingResult result) {
-		Trabajador trabajadorNuevo = null;
+		Trabajador trabajadorNuevo;
 		
 		// Comprobación de que la petición tiene datos correctos
 		if (result.hasErrors()) {
@@ -153,7 +152,7 @@ public class TrabajadorRestController {
 			 * Esta forma de comprobar unicidad NO es perfecta porque no hay forma de
 			 * garantizar que mientras se ejecuta no se ha insertado otro registro en
 			 * la BBDD con el dato que se está comprobando, pero funcionará casi siempre.
-			 * Además si no se hace el servidor peta.
+			 * Además, si no se hace el servidor peta.
 			 */
 			
 			// Comprobación de que el ID no se encuentra ya en la BBDD
@@ -191,13 +190,12 @@ public class TrabajadorRestController {
 	/**
 	 * Servicio para actualizar un trabajador
 	 * @param trabajador Los datos con la actualización del trabajador
-	 * @param result
 	 * @param id El ID del trabajador que se quiere actualizar
 	 * @return Los nuevos datos del trabajador una vez están actualizados
 	 */
 	@PutMapping("/trabajadores/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody Trabajador trabajador, BindingResult result, @PathVariable String id) {
-		Trabajador trabajadorUpdate = null;
+		Trabajador trabajadorUpdate;
 		
 		// Comprobación de que la petición tiene datos correctos
 		if (result.hasErrors()) {
