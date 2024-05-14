@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import edu.carlosliam.trabajos.models.dto.TrabajoDTO;
 import edu.carlosliam.trabajos.models.services.ITrabajadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -69,35 +70,39 @@ public class TrabajoRestController {
 	 */
 	@GetMapping("/trabajos")
 	public ResponseEntity<?> index() {
-		List<Trabajo> trabajo = new ArrayList<>();
+		List<TrabajoDTO> trabajosDTO;
 		
 		try {
-			trabajo.addAll(this.trabajoService.findAll());
+			trabajosDTO = this.trabajoService
+					.findAll()
+					.stream()
+					.map(TrabajoDTO::convertToDTO)
+					.collect(Collectors.toList());
 		} catch(DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
 					"Error al realizar la consulta en la base de datos.");
 		}
 		
-		return createResultResponse(HttpStatus.OK, trabajo);
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 
 	@GetMapping("/trabajos/sin_asignar")
 	public ResponseEntity<?> showSinAsignar() {
-		List<Trabajo> trabajos;
+		List<TrabajoDTO> trabajosDTO;
 
 		try {
-			trabajos = new ArrayList<>(this.trabajoService
+			trabajosDTO = this.trabajoService
 					.findAll()
 					.stream()
 					.filter(t -> t.getTrabajador() == null)
-					.toList()
-			);
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
 		} catch(DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error al realizar la consulta en la base de datos.");
 		}
 
-		return createResultResponse(HttpStatus.OK, trabajos);
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 	
 	/*
@@ -105,7 +110,7 @@ public class TrabajoRestController {
 	 */
 	@GetMapping("/trabajos/{id}")
 	public ResponseEntity<?> show(@PathVariable String id) {
-		Trabajo trabajo = null;
+		Trabajo trabajo;
 				
 		try {
 			trabajo = this.trabajoService.findById(id);
@@ -119,13 +124,13 @@ public class TrabajoRestController {
 					"El trabajo con el ID: ".concat(id).concat(" no se ha encontrado."));
 		}
 		
-		return createResultResponse(HttpStatus.OK, trabajo);
+		return createResultResponse(HttpStatus.OK, TrabajoDTO.convertToDTO(trabajo));
 	}
 
 	@GetMapping("/trabajos/{trabajadorId}/finalizados/{fecIni}/{fecFin}")
 	public ResponseEntity<?> getTrabajosFinalizados(@PathVariable String trabajadorId, @PathVariable String fecIni,
 													@PathVariable String fecFin) {
-		List<Trabajo> trabajos;
+		List<TrabajoDTO> trabajos;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MM-yyyy");
 		LocalDate inicio;
 		LocalDate fin;
@@ -158,6 +163,7 @@ public class TrabajoRestController {
 					.filter(t -> t.getFecFin() != null)
 					.filter(t -> t.getFecIni().isAfter(inicio) || t.getFecIni().isEqual(inicio))
 					.filter(t -> t.getFecFin().isBefore(fin) || t.getFecFin().isEqual(fin))
+					.map(TrabajoDTO::convertToDTO)
 					.toList()
 			);
 		} catch(DataAccessException e) {
@@ -174,7 +180,7 @@ public class TrabajoRestController {
 	@PostMapping("/trabajos")
 	//@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> create(@Valid @RequestBody Trabajo trabajo, BindingResult result) {
-		Trabajo trabajoNuevo = null;
+		Trabajo trabajoNuevo;
 		
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors()
@@ -198,12 +204,12 @@ public class TrabajoRestController {
 					"Error al realizar la inserción en la base de datos: " + e.getLocalizedMessage());
 		}
 		
-		return createResultResponse(HttpStatus.CREATED, trabajoNuevo);
+		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoNuevo));
 	}
 	
 	@PutMapping("/trabajos/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody Trabajo trabajo, BindingResult result, @PathVariable String id) {
-		Trabajo trabajoUpdate = null;
+		Trabajo trabajoUpdate;
 		
 		if(result.hasErrors()) {
 			List<String> errors = result.getFieldErrors()
@@ -236,7 +242,7 @@ public class TrabajoRestController {
 					"Error al actualizar el trabajo en la base de datos.");
 		}		
 		
-		return createResultResponse(HttpStatus.CREATED, trabajoUpdate);
+		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoUpdate));
 	}
 	
 	@DeleteMapping("/trabajos/{id}")
@@ -293,6 +299,6 @@ public class TrabajoRestController {
 					"Error al realizar la inserción en la base de datos.");
 		}
 
-		return createResultResponse(HttpStatus.CREATED, trabajoNuevo);
+		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajo));
 	}
 }

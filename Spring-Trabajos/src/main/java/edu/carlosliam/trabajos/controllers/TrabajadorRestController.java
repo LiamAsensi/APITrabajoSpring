@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import edu.carlosliam.trabajos.models.dto.TrabajadorDTO;
+import edu.carlosliam.trabajos.models.dto.TrabajoDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -56,6 +58,7 @@ public class TrabajadorRestController {
 	
 	// Método para hacer login y obtener los trabajos finalizados/pendientes
 	private ResponseEntity<?> login(String id, String pass, boolean pendientes) {
+		List<TrabajoDTO> trabajosDTO;
 		Trabajador trabajador;
 		
 		try {
@@ -71,18 +74,19 @@ public class TrabajadorRestController {
 				return createErrorResponse(HttpStatus.UNAUTHORIZED,
 						"Login o password incorrecto");
 			}
+
+			trabajosDTO = trabajador
+					.getTrabajos()
+					.stream()
+					.filter(t -> pendientes == (t.getFecFin() == null))
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
 		} catch (DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error al eliminar el trabajador de la base de datos.");
 		}
 		
-		List<Trabajo> trabajos = trabajador
-				.getTrabajos()
-				.stream()
-				.filter(t -> pendientes == (t.getFecFin() == null))
-				.toList();
-		
-		return createResultResponse(HttpStatus.OK, trabajos);
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 	
 	/**
@@ -91,16 +95,20 @@ public class TrabajadorRestController {
 	 */
 	@GetMapping("/trabajadores")
 	public ResponseEntity<?> index() {
-		List<Trabajador> trabajadores;
+		List<TrabajadorDTO> trabajadoresDTO;
 		
 		try {
-			trabajadores = new ArrayList<>(this.trabajadorService.findAll());
+			List<Trabajador> trabajadores = new ArrayList<>(this.trabajadorService.findAll());
+			trabajadoresDTO = trabajadores
+					.stream()
+					.map(TrabajadorDTO::convertToDTO)
+					.collect(Collectors.toList());
 		} catch(DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
 					"Error al realizar la consulta en la base de datos.");
 		}
 		
-		return createResultResponse(HttpStatus.OK, trabajadores);
+		return createResultResponse(HttpStatus.OK, trabajadoresDTO);
 	}
 	
 	/**
@@ -118,14 +126,14 @@ public class TrabajadorRestController {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error al realizar la consulta en la base de datos.");
 		}
-		
+
 		// Comprobación de que existe un trabajador con el ID de los parámetros
 		if (trabajador == null) {
 			return createErrorResponse(HttpStatus.NOT_FOUND,
 					"El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
 		}
 		
-		return createResultResponse(HttpStatus.OK, trabajador);
+		return createResultResponse(HttpStatus.OK, TrabajadorDTO.convertToDTO(trabajador));
 	}
 	
 	/**
@@ -184,7 +192,7 @@ public class TrabajadorRestController {
 					"Error al realizar la inserción en la base de datos.");
 		}
 		
-		return createResultResponse(HttpStatus.CREATED, trabajadorNuevo);
+		return createResultResponse(HttpStatus.CREATED, TrabajadorDTO.convertToDTO(trabajadorNuevo));
 	}
 	
 	/**
@@ -229,7 +237,7 @@ public class TrabajadorRestController {
 					"Error al actualizar el trabajador en la base de datos.");
 		}
 		
-		return createResultResponse(HttpStatus.CREATED, trabajadorUpdate);
+		return createResultResponse(HttpStatus.CREATED, TrabajadorDTO.convertToDTO(trabajadorUpdate));
 	}
 	
 	/**
