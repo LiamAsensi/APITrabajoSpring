@@ -582,7 +582,7 @@ paths:
                     example: true
                   errorMessage:
                     type: string
-                    example: 'El trabajo con el id: 3 no se ha encontrado'
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
         '500':
           description: Error interno del servidor
           content:
@@ -598,7 +598,81 @@ paths:
                     example: Error al realizar la consulta en la base de datos
         default:
           description: Error desconocido
-
+    post:
+      tags:
+        - trabajo
+      summary: Crear un trabajo con un trabajador
+      description: |-
+        Se intenta buscar el trabajador según el ID pasado por parámetros y se crea un trabajo con el trabajador
+        asignado a dicho trabajo directamente.
+      operationId: postTrabajoAsignado
+      responses:
+        '201':
+          description: Trabajo creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '400':
+          description: Intento de creación con datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: El campo 'id' no puede estar vacío
+        '404':
+          description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el id: 3 no se ha encontrado'
+        '409':
+          description: Conflicto con ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el ID: T2 ya existe'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la inserción en la base de datos
+        default:
+          description: Error desconocido
     # Servicio PUT para actualizar los datos de un trabajador
     put:
       summary: Actualiza un trabajo
@@ -724,6 +798,129 @@ paths:
                   errorMessage:
                     type: string
                     example: Error al eliminar el trabajo de la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/sin_asignar:
+    get:
+      summary: Obtiene los trabajos sin asignar
+      description: Busca todos los trabajos y devuelve aquellos que no tengan un trabajador asignado
+      operationId: getTrabajosSinAsignar
+      responses:
+        '200':
+          description: Devolución del listado con los trabajos sin asignar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajo'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/{trabajadorId}/finalizados/{fecIni}/{fecFin}:
+    get:
+      summary: Obtiene los trabajos finalizados entre dos fechas
+      description: |-
+        Busca todos los trabajos realizados por un trabajador (Que se busca por el ID pasado por parámetros) y que se
+        hayan realizado entre la fecha de inicio (Primera fecha en los parámetros) y la fecha de fin (Segunda fecha en
+        los parámetros), ambas inclusive.
+      operationId: getTrabajosEntreFechas
+      parameters:
+        - in: path
+          name: trabajadorId
+          required: true
+          description: ID del trabajador cuyas tareas se quieren buscar
+          schema:
+            type: string
+        - in: path
+          name: fecIni
+          required: true
+          description: Fecha de inicio de la búsqueda
+          schema:
+            type: string
+            format: date
+        - in: path
+          name: fecFin
+          required: true
+          description: Fecha de fin de la búsqueda
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Devolución del listado con los trabajos finalizados entre las dos fechas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trabajo'
+        '400':
+          summary: Error relacionado con las fechas
+          description: |-
+            Mensaje de error en caso de que las fechas no tengan el formato esperado (d-MM-yyyy), o de que se indique
+            la fecha de inicio como una fecha posterior a la fecha de fin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: La fecha de inicio no puede ser posterior a la fecha de fin
+        '404':
+          description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajador con el id: 3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
         default:
           description: Error desconocido
 components:

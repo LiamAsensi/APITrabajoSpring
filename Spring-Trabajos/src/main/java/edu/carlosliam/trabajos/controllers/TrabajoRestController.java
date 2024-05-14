@@ -1,5 +1,8 @@
 package edu.carlosliam.trabajos.controllers;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import edu.carlosliam.trabajos.models.services.ITrabajadorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +40,9 @@ public class TrabajoRestController {
 	
 	@Autowired
 	private ITrabajoService trabajoService;
+
+	@Autowired
+	private ITrabajadorService trabajadorService;
 	
 	// Crear respuestas de error
 	private ResponseEntity<?> createErrorResponse(HttpStatus status, String errorMessage) {
@@ -72,7 +80,25 @@ public class TrabajoRestController {
 		
 		return createResultResponse(HttpStatus.OK, trabajo);
 	}
-	
+
+	@GetMapping("/trabajos/sin_asignar")
+	public ResponseEntity<?> showSinAsignar() {
+		List<Trabajo> trabajos;
+
+		try {
+			trabajos = new ArrayList<>(this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getTrabajador() == null)
+					.toList()
+			);
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajos);
+	}
 	
 	/*
 	 * Servicio para obtener un trabajo por su ID pasado por parámetro
@@ -94,6 +120,52 @@ public class TrabajoRestController {
 		}
 		
 		return createResultResponse(HttpStatus.OK, trabajo);
+	}
+
+	@GetMapping("/trabajos/{trabajadorId}/finalizados/{fecIni}/{fecFin}")
+	public ResponseEntity<?> getTrabajosFinalizados(@PathVariable String trabajadorId, @PathVariable String fecIni,
+													@PathVariable String fecFin) {
+		List<Trabajo> trabajos;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MM-yyyy");
+		LocalDate inicio;
+		LocalDate fin;
+
+		try {
+			inicio = LocalDate.parse(fecIni, formatter);
+			fin = LocalDate.parse(fecFin, formatter);
+		} catch (DateTimeParseException e) {
+			return createErrorResponse(HttpStatus.BAD_REQUEST,
+					"El formato de la fecha no es válido (Debe ser: d-MM-yyyy)");
+		}
+
+		if (inicio.isAfter(fin)) {
+			return createErrorResponse(HttpStatus.BAD_REQUEST,
+					"La fecha de inicio no puede ser posterior a la fecha de fin");
+		}
+
+		try {
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+
+			trabajos = new ArrayList<>(this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getTrabajador() == trabajador)
+					.filter(t -> t.getFecFin() != null)
+					.filter(t -> t.getFecIni().isAfter(inicio) || t.getFecIni().isEqual(inicio))
+					.filter(t -> t.getFecFin().isBefore(fin) || t.getFecFin().isEqual(fin))
+					.toList()
+			);
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajos);
 	}
 	
 	/*
@@ -123,7 +195,7 @@ public class TrabajoRestController {
 			trabajoNuevo = this.trabajoService.save(trabajo);
 		} catch (DataAccessException e) {
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error al realizar la inserción en la base de datos.");
+					"Error al realizar la inserción en la base de datos: " + e.getLocalizedMessage());
 		}
 		
 		return createResultResponse(HttpStatus.CREATED, trabajoNuevo);
@@ -184,5 +256,43 @@ public class TrabajoRestController {
 		}
 		
 		return createResultResponse(HttpStatus.OK, "Trabajo eliminado con éxito.");
+	}
+
+	@PostMapping("/trabajos/{trabajadorId}")
+	public ResponseEntity<?> createWithTrabajador(@Valid @RequestBody Trabajo trabajo, BindingResult result,
+												  @PathVariable String trabajadorId) {
+		Trabajo trabajoNuevo;
+
+		if (result.hasErrors()) {
+			List<String> errors = result.getFieldErrors()
+					.stream()
+					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return createErrorResponse(HttpStatus.BAD_REQUEST, String.join(", ", errors));
+		}
+
+		try {
+			// Comprobación de que el ID no se encuentra ya en la BBDD
+			if (this.trabajoService.findById(trabajo.getCodTrab()) != null) {
+				return createErrorResponse(HttpStatus.CONFLICT,
+						"El trabajo con el ID: ".concat(trabajo.getCodTrab()).concat(" ya existe."));
+			}
+
+			// Asignación del trabajador
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+			trabajo.setTrabajador(trabajador);
+
+			trabajoNuevo = this.trabajoService.save(trabajo);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la inserción en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.CREATED, trabajoNuevo);
 	}
 }

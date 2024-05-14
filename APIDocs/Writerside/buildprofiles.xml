@@ -4,5 +4,6 @@
         <primary-color>ruby</primary-color>
         <custom-favicons>images/nesteja_icon.png</custom-favicons>
         <header-logo>images/nesteja.png</header-logo>
+        <offline-docs>true</offline-docs>
     </variables>
 </buildprofiles>
