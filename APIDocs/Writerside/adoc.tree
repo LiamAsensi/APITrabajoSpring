@@ -13,8 +13,11 @@
             <toc-element topic="Obtener-todos-los-trabajos.md"/>
             <toc-element topic="Obtener-trabajo-por-ID.md"/>
             <toc-element topic="Guardar-trabajo.md"/>
+            <toc-element topic="Guardar-trabajo-asignado.md"/>
             <toc-element topic="Actualizar-trabajo.md"/>
             <toc-element topic="Eliminar-trabajo.md"/>
+            <toc-element topic="Obtener-trabajos-sin-asignar.md"/>
+            <toc-element topic="Obtener-trabajos-entre-fechas.md"/>
         </toc-element>
         <toc-element topic="Trabajador.md">
             <toc-element topic="Obtener-todos-los-trabajadores.md"/>
