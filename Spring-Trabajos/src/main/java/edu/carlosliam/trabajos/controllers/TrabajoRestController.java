@@ -244,7 +244,76 @@ public class TrabajoRestController {
 		
 		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoUpdate));
 	}
-	
+
+	@PutMapping("/trabajos/{trabajoId}/asignar/{trabajadorId}")
+	public ResponseEntity<?> asignarTrabajo(@PathVariable String trabajoId, @PathVariable String trabajadorId) {
+		Trabajo trabajoUpdate;
+
+		try {
+			// Encontrar el trabajo por ID
+			Trabajo trabajoActual = this.trabajoService.findById(trabajoId);
+			if (trabajoActual == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajo con el ID: ".concat(trabajoId).concat(" no se ha encontrado."));
+			}
+
+			// Encontrar el trabajador por ID
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+
+			// Comprobar que la categoría del trabajo coincide con la especialidad del trabajador
+			if (!trabajoActual.getCategoria().equals(trabajador.getEspecialidad())) {
+				return createErrorResponse(HttpStatus.BAD_REQUEST,
+						"La categoría del trabajo y la especialidad del trabajador no coinciden.");
+			}
+
+			// Asignar el trabajador al trabajo
+			trabajoActual.setTrabajador(trabajador);
+
+			// Guardar el trabajo actualizado
+			trabajoUpdate = this.trabajoService.save(trabajoActual);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al asignar el trabajador al trabajo en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoUpdate));
+	}
+
+	@PutMapping("/trabajos/{trabajoId}/finalizar/{actualDate}")
+	public ResponseEntity<?> finalizarTrabajo(@PathVariable String trabajoId, @PathVariable String actualDate) {
+		Trabajo trabajoUpdate;
+
+		try {
+			LocalDate actualDateParsed = LocalDate.parse(actualDate);
+			// Encontrar el trabajo por ID
+			Trabajo trabajoActual = this.trabajoService.findById(trabajoId);
+			if (trabajoActual == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajo con el ID: ".concat(trabajoId).concat(" no se ha encontrado."));
+			}
+
+			if (actualDateParsed.isBefore(trabajoActual.getFecIni())) {
+				return createErrorResponse(HttpStatus.BAD_REQUEST,
+						"La fecha de finalización debe ser posterior a la de inicio.");
+			}
+
+			// Asignar el trabajador al trabajo
+			trabajoActual.setFecFin(actualDateParsed);
+
+			// Guardar el trabajo actualizado
+			trabajoUpdate = this.trabajoService.save(trabajoActual);
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al finalizar el trabajo.");
+		}
+
+		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoUpdate));
+	}
+
 	@DeleteMapping("/trabajos/{id}")
 	public ResponseEntity<?> delete(@PathVariable String id) {
 		try {
