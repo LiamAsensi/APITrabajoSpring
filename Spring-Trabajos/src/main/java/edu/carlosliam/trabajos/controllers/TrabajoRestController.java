@@ -3,11 +3,7 @@ package edu.carlosliam.trabajos.controllers;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.carlosliam.trabajos.models.dto.TrabajoDTO;
@@ -125,6 +121,71 @@ public class TrabajoRestController {
 		}
 		
 		return createResultResponse(HttpStatus.OK, TrabajoDTO.convertToDTO(trabajo));
+	}
+
+	/*
+	 * Servicio para obtener un listado de trabajos pendientes ordenados por prioridad
+	 * de un trabajador pasado por parámetro
+	 */
+	@GetMapping("/trabajos/{trabajadorId}/prioridad")
+	public ResponseEntity<?> tareasEmpleadoPorPrioridad(@PathVariable String trabajadorId) {
+		List<TrabajoDTO> trabajosDTO;
+
+		try {
+			// Encontrar el trabajador por ID
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+
+			trabajosDTO = this.trabajoService
+				.findAll()
+				.stream()
+				.filter(t -> t.getTrabajador() == trabajador)
+				.filter(t -> t.getFecFin() == null)
+				.sorted(Comparator.comparingInt(Trabajo::getPrioridad))
+				.map(TrabajoDTO::convertToDTO)
+				.toList();
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
+	}
+
+	/*
+	 * Servicio para obtener un listado de trabajos pendientes de una prioridad
+	 * en concreto de un trabajador pasado por parámetro
+	 */
+	@GetMapping("/trabajos/{trabajadorId}/prioridad/{prioridad}")
+	public ResponseEntity<?> tareasEmpleadoDeXPrioridad(@PathVariable String trabajadorId, @PathVariable String prioridad) {
+		List<TrabajoDTO> trabajosDTO;
+
+		try {
+			// Encontrar el trabajador por ID
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+
+			trabajosDTO = this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getTrabajador() == trabajador)
+					.filter(t -> t.getFecFin() == null)
+					.filter(t -> t.getPrioridad() == Integer.parseInt(prioridad))
+					.sorted(Comparator.comparingInt(Trabajo::getPrioridad))
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 
 	@GetMapping("/trabajos/{trabajadorId}/finalizados/{fecIni}/{fecFin}")
