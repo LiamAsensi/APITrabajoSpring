@@ -67,18 +67,18 @@ public class TrabajoRestController {
 	@GetMapping("/trabajos")
 	public ResponseEntity<?> index() {
 		List<TrabajoDTO> trabajosDTO;
-		
+
 		try {
 			trabajosDTO = this.trabajoService
 					.findAll()
 					.stream()
 					.map(TrabajoDTO::convertToDTO)
 					.collect(Collectors.toList());
-		} catch(DataAccessException e) {
-			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error al realizar la consulta en la base de datos.");
 		}
-		
+
 		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 
@@ -91,6 +91,51 @@ public class TrabajoRestController {
 					.findAll()
 					.stream()
 					.filter(t -> t.getTrabajador() == null)
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
+	}
+
+	/*
+	 * Servicio para obtener un listado de trabajos finalizados
+	 */
+	@GetMapping("/trabajos/finalizados")
+	public ResponseEntity<?> showFinalizados() {
+		List<TrabajoDTO> trabajosDTO;
+
+		try {
+			trabajosDTO = this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getFecFin() != null)
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
+	}
+
+	/*
+	 * Servicio para obtener un listado de trabajos pendientes
+	 */
+	@GetMapping("/trabajos/pendientes")
+	public ResponseEntity<?> showPendientes() {
+		List<TrabajoDTO> trabajosDTO;
+
+		try {
+			trabajosDTO = this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getTrabajador() != null)
+					.filter(t -> t.getFecFin() == null)
 					.map(TrabajoDTO::convertToDTO)
 					.toList();
 		} catch(DataAccessException e) {
