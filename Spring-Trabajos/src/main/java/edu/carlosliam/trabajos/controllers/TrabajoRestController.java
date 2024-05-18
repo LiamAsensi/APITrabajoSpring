@@ -233,6 +233,44 @@ public class TrabajoRestController {
 		return createResultResponse(HttpStatus.OK, trabajosDTO);
 	}
 
+	@GetMapping("/trabajos/todos/finalizados/{fecIni}/{fecFin}")
+	public ResponseEntity<?> getTrabajosFinalizados(@PathVariable String fecIni, @PathVariable String fecFin) {
+		List<TrabajoDTO> trabajos;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MM-yyyy");
+		LocalDate inicio;
+		LocalDate fin;
+
+		try {
+			inicio = LocalDate.parse(fecIni, formatter);
+			fin = LocalDate.parse(fecFin, formatter);
+		} catch (DateTimeParseException e) {
+			return createErrorResponse(HttpStatus.BAD_REQUEST,
+					"El formato de la fecha no es válido (Debe ser: d-MM-yyyy)");
+		}
+
+		if (inicio.isAfter(fin)) {
+			return createErrorResponse(HttpStatus.BAD_REQUEST,
+					"La fecha de inicio no puede ser posterior a la fecha de fin");
+		}
+
+		try {
+			trabajos = new ArrayList<>(this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getFecFin() != null)
+					.filter(t -> t.getFecFin().isAfter(inicio) || t.getFecFin().isEqual(inicio))
+					.filter(t -> t.getFecFin().isBefore(fin) || t.getFecFin().isEqual(fin))
+					.map(TrabajoDTO::convertToDTO)
+					.toList()
+			);
+		} catch(DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajos);
+	}
+
 	@GetMapping("/trabajos/{trabajadorId}/finalizados/{fecIni}/{fecFin}")
 	public ResponseEntity<?> getTrabajosFinalizados(@PathVariable String trabajadorId, @PathVariable String fecIni,
 													@PathVariable String fecFin) {
@@ -267,7 +305,7 @@ public class TrabajoRestController {
 					.stream()
 					.filter(t -> t.getTrabajador() == trabajador)
 					.filter(t -> t.getFecFin() != null)
-					.filter(t -> t.getFecIni().isAfter(inicio) || t.getFecIni().isEqual(inicio))
+					.filter(t -> t.getFecFin().isAfter(inicio) || t.getFecFin().isEqual(inicio))
 					.filter(t -> t.getFecFin().isBefore(fin) || t.getFecFin().isEqual(fin))
 					.map(TrabajoDTO::convertToDTO)
 					.toList()
