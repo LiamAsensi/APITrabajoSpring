@@ -1,5 +1,5 @@
-INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('1', '12345678', 'Juan', 'Pérez', 'Carpintería', 'contraseña123', 'juan@example.com');
-INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('2', '98765432', 'María', 'García', 'Electricidad', 'password456', 'maria@example.com');
+INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('1', '53246914M', 'Liam', 'Alejo Asensi', 'limpieza', '1234', 'liam.alejo@gmail.com');
+INSERT INTO trabajador (id_trabajador, dni, nombre, apellidos, especialidad, contraseña, email) VALUES ('2', '98765432T', 'Carlos', 'Rivero García-Valenciano', 'electricidad', 'password456', 'karlos.riverog@gmail.com');
 INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T1', 'Construcción', 'Reparación de tejado', '2024-05-01', '2024-05-10', 80.5, '1', 1);
 INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T2', 'Fontanería', 'Instalación de tuberías', '2024-05-05', '2024-05-15', 65.0, '2', 2);
 INSERT INTO trabajo (cod_trabajo, categoria, descripcion, fec_ini, fec_fin, tiempo, id_trabajador, prioridad) VALUES ('T3', 'Pintura', 'Pintar fachada', '2024-05-08', '2024-05-12', 40.0, NULL, 3);
