@@ -674,7 +674,7 @@ paths:
                     example: Error al realizar la inserción en la base de datos
         default:
           description: Error desconocido
-    # Servicio PUT para actualizar los datos de un trabajador
+    # Servicio PUT para actualizar los datos de un trabajo
     put:
       summary: Actualiza un trabajo
       description: Busca un trabajo por ID y actualiza sus datos
@@ -987,6 +987,270 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Trabajo'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/{trabajoId}/asignar/{trabajadorId}:
+    put:
+      summary: Asigna un trabajo a un trabajador
+      description: Busca un trabajo por su ID, y un trabajador por ID y asigna el trabajador encontrado al trabajo.
+      operationId: putAsignarTrabajador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajo
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Trabajador asignado al trabajo correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '400':
+          description: Error en la asignación, la profesión del trabajador no coincide con el tipo de trabajo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: La categoría del trabajo y la especialidad del trabajador no coinciden.
+        '404':
+          description: El trabajo no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al actualizar el trabajo en la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/{trabajoId}/finalizar/{actualDate}:
+    put:
+      summary: Finalizar un trabajo
+      description: Busca un trabajo por su ID y le asigna la fecha de finalización pasada por parámetro
+      operationId: putFinalizar trabajo
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajo
+          schema:
+            type: string
+        - in: path
+          name: fecFin
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+            format: date
+
+      responses:
+        '201':
+          description: Trabajo finalizado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '400':
+          description: Error finalizando el trabajo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: La fecha de finalización debe ser posterior a la de inicio.
+        '404':
+          description: El trabajo no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al actualizar el trabajo en la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/{idTrabajador}/prioridad:
+    # Servicio GET para obtener un listado de trabajos de un empleado por prioridad
+    get:
+      tags:
+        - trabajo
+      summary: Obtener trabajos de un empleado ordenados por prioridad
+      description: Devuelve el listado de los trabajos asignados a un empleado pasado por parámetro, ordenado por prioridad ascendente
+      operationId: getTrabajoOrderPriority
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listado de trabajo devueltos correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '404':
+          description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: Error al realizar la consulta en la base de datos
+        default:
+          description: Error desconocido
+  /trabajos/{idTrabajador}/prioridad/{prioridad}:
+    # Servicio GET para obtener un listado de trabajos de un empleado por prioridad
+    get:
+      tags:
+        - trabajo
+      summary: Obtener trabajos de un empleado de una prioridad concreta
+      description: Devuelve el listado de los trabajos asignados a un empleado pasado por parámetro de una prioridad concreta.
+      operationId: getTrabajoOrderPriority
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del trabajador
+          schema:
+            type: string
+        - in: path
+          name: prioridad
+          required: true
+          description: Prioridad
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listado de trabajos devueltos correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: false
+                  result:
+                    $ref: '#/components/schemas/Trabajo'
+        '404':
+          description: El trabajador no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    example: true
+                  errorMessage:
+                    type: string
+                    example: 'El trabajo con el id: T3 no se ha encontrado'
         '500':
           description: Error interno del servidor
           content:
