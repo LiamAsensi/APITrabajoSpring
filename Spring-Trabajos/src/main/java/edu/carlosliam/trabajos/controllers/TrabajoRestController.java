@@ -409,7 +409,7 @@ public class TrabajoRestController {
 			}
 
 			// Comprobar que la categoría del trabajo coincide con la especialidad del trabajador
-			if (!trabajoActual.getCategoria().equals(trabajador.getEspecialidad())) {
+			if (!trabajoActual.getCategoria().equalsIgnoreCase(trabajador.getEspecialidad())) {
 				return createErrorResponse(HttpStatus.BAD_REQUEST,
 						"La categoría del trabajo y la especialidad del trabajador no coinciden.");
 			}
