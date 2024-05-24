@@ -132,7 +132,7 @@ public class TrabajadorRestController {
 			return createErrorResponse(HttpStatus.NOT_FOUND,
 					"El trabajador con el ID: ".concat(id).concat(" no se ha encontrado."));
 		}
-		
+
 		return createResultResponse(HttpStatus.OK, TrabajadorDTO.convertToDTO(trabajador));
 	}
 	

@@ -33,7 +33,7 @@ public class Trabajador implements Serializable{
     private static final String DNI_REGEX = "^(?:[0-9]{8}[" + DNI_CHARS + "]|[XYZ][0-9]{7}[" + DNI_CHARS + "])$";
     
     @JsonIgnore
-    private static final String ESPECIALIDAD_REGEX = "^(electricidad|limpieza|gestion|fontaneria|carpinteria)$";
+    private static final String ESPECIALIDAD_REGEX = "^(electricidad|limpieza|gestion|fontaneria|carpinteria|pintura|construccion)$";
 	
 	@Id
 	@NotEmpty(message = "no puede estar vacío")
