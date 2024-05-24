@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
@@ -23,40 +24,42 @@ import jakarta.validation.constraints.*;
 @Table(name="trabajo")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "codTrab")
 public class Trabajo implements Serializable{
+	@JsonIgnore
+	private static final String ESPECIALIDAD_REGEX = "^(electricidad|limpieza|gestion|fontaneria|carpinteria|pintura|construccion)$";
+
 	@Id
-	@Size(min=1, max=5, message="debe tener entre 1 y 5 caracteres.")
-	@Column(name="cod_trabajo")
+	@Size(min = 1, max = 5, message = "debe tener entre 1 y 5 caracteres.")
+	@Column(name = "cod_trabajo")
 	private String codTrab;
 	
-	@NotEmpty(message="no puede estar vacio.")
-	@Size(min=1, max=50, message="debe tener entre 1 y 50 caracteres.")
-	@Column(nullable=false)
+	@NotEmpty(message = "no puede estar vacio.")
+	@Pattern(regexp = ESPECIALIDAD_REGEX, message = "no tiene un formato válido")
+	@Column(nullable = false)
 	private String categoria;
 
-	@NotEmpty(message="no puede estar vacio.")
-	@Size(min=1, max=500, message="debe tener entre 1 y 500 caracteres.")
-	@Column(nullable=false)
+	@NotEmpty(message = "no puede estar vacio.")
+	@Size(min = 1, max = 500, message = "debe tener entre 1 y 500 caracteres.")
+	@Column(nullable = false)
 	private String descripcion;
 
-	@NotNull(message="no puede estar vacio.")
-	@Column(name="fec_ini", nullable=false)
+	@NotNull(message = "no puede estar vacio.")
+	@Column(name = "fec_ini", nullable=false)
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecIni;
 	
-	@Column(name="fec_fin")
+	@Column(name = "fec_fin")
 	@Temporal(TemporalType.DATE)
 	private LocalDate fecFin;
 
-	@DecimalMax(value="999.9", message="no puede superar las 999.9h.")
+	@DecimalMax(value = "999.9", message = "no puede superar las 999.9h.")
 	private Float tiempo;
 	
-	@NotNull(message="no puede estar vacio.")
-	@Max(value=9, message="no puede superar 9.")
-	@Column(nullable=false)
+	@NotNull(message = "no puede estar vacio.")
+	@Max(value = 9, message = "no puede superar 9.")
+	@Column(nullable = false)
 	private int prioridad;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-
 	@JoinColumn(name = "id_trabajador")
 	private Trabajador trabajador;
 	
