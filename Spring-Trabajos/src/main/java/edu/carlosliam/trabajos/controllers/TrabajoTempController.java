@@ -72,4 +72,42 @@ public class TrabajoTempController {
             return "trabajo"; // redirigir a la lista de trabajos en caso de error
         }
     }
+
+    // Renderiza la vista del formulario de edición de un trabajo
+    @GetMapping("/trabajo/edit/{id}")
+    public String editarTrabajo(@PathVariable String id, Model model) {
+        try {
+            Trabajo trabajo = trabajoService.findById(id);
+            model.addAttribute("trabajo", trabajo);
+            List<TrabajadorDTO> trabajadoresDTO = trabajadorService.findAll()
+                    .stream()
+                    .map(TrabajadorDTO::convertToDTO)
+                    .collect(Collectors.toList());
+            model.addAttribute("trabajadores", trabajadoresDTO);
+            return "trabajo-form"; // Vista del formulario de edición
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Error al cargar el trabajo para editar.");
+            return "trabajo-form"; // redirigir a la lista de trabajos en caso de error
+        }
+    }
+
+    // Renderiza la vista del formulario de creación de un trabajo
+    @GetMapping("/trabajo/new")
+    public String nuevoTrabajo(Model model) {
+        try {
+            Trabajo trabajo = new Trabajo();
+            model.addAttribute("trabajo", trabajo);
+            List<TrabajadorDTO> trabajadoresDTO = trabajadorService.findAll()
+                    .stream()
+                    .map(TrabajadorDTO::convertToDTO)
+                    .collect(Collectors.toList());
+            model.addAttribute("trabajadores", trabajadoresDTO);
+            return "trabajo-new";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Error al cargar el formulario para crear un nuevo trabajo.");
+            return "trabajo"; // redirigir a la lista de trabajos en caso de error
+        }
+    }
 }
