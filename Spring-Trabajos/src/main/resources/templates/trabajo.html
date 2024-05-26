@@ -7,25 +7,27 @@
     <title>Trabajos</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="app/index">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/app/trabajo">Trabajos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Trabajadores</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="app/index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/app/trabajo">Trabajos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Trabajadores</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
     <div class="container mt-4">
         <h1 class="mb-4">Lista de Trabajos</h1>
         <div th:if="${error}" class="alert alert-danger" role="alert">
@@ -34,29 +36,84 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Fecha Inicio</th>
-                    <th>Trabajador</th>
-                    <th>Prioridad</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Trabajador</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Prioridad</th>
+                        <th>Acciones</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr th:each="trabajo : ${trabajos}">
-                    <td th:text="${trabajo.codTrab}"></td>
-                    <td th:text="${trabajo.descripcion}"></td>
-                    <td th:text="${trabajo.categoria}"></td>
-                    <td th:text="${trabajo.fecIni}"></td>
-                    <!-- Si el trabajador no es nulo muestra su nombre, si no muestra Sin asignar -->
-                    <td th:text="${trabajo.trabajador != null} ? ${trabajo.trabajador.nombre} : 'Sin asignar'"></td>
-                    <td th:text="${trabajo.prioridad}"></td>
-                </tr>
+                    <tr th:each="trabajo : ${trabajos}">
+                        <td th:text="${trabajo.codTrab}"></td>
+                        <td th:text="${trabajo.descripcion}"></td>
+                        <td th:text="${trabajo.categoria}"></td>
+                        <!-- Si el trabajador no es nulo muestra su nombre, si no muestra Sin asignar -->
+                        <td th:text="${trabajo.trabajador != null} ? ${trabajo.trabajador.nombre} : 'Sin asignar'"></td>
+                        <td th:text="${trabajo.fecIni}"></td>
+                        <!-- Si la fecha de fin es nula muestra Sin finalizar, si no muestra la fecha de fin -->
+                        <td th:text="${trabajo.fecFin != null} ? ${trabajo.fecFin} : 'Sin finalizar'"></td>
+                        <td th:text="${trabajo.prioridad}"></td>
+                        <td>
+                            <a th:href="@{'/app/trabajo/edit/' + ${trabajo.codTrab}}" class="btn btn-primary btn-sm">Editar</a>
+                            <a th:href="@{'/app/trabajo/delete/' + ${trabajo.codTrab}}" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Formulario de nuevo trabajo -->
+    <div class="container mt-4">
+        <h1 class="mb-4">Nuevo Trabajo</h1>
+        <form th:action="@{/app/trabajo/save}" method="post">
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+
+                <label for="categoria">Categoría</label>
+                <select class="form-control" id="categoria" name="categoria" required>
+                    <option value="" disabled selected>Selecciona una categoría</option>
+                    <option value="electricidad">Electricidad</option>
+                    <option value="limpieza">Limpieza</option>
+                    <option value="gestion">Gestión</option>
+                    <option value="fontaneria">Fontanería</option>
+                    <option value="carpinteria">Carpintería</option>
+                    <option value="pintura">Pintura</option>
+                    <option value="construccion">Construcción</option>
+                </select>
+
+                <label for="trabajador">Trabajador</label>
+                <select class="form-control" id="trabajador" name="trabajador">
+                    <option value="">Sin asignar</option>
+                    <option th:each="trabajador : ${trabajadores}"
+                            th:value="${trabajador.idTrabajador}"
+                            th:text="${trabajador.nombre} + ' ' + ${trabajador.apellidos} + ' - ' + ${trabajador.especialidad} + ' - ' + ${trabajador.dni}">
+                    </option>
+                </select>
+
+                <label for="fecIni">Fecha Inicio</label>
+                <input type="date" class="form-control" id="fecIni" name="fecIni" required>
+
+                <label for="fecFin">Fecha Fin</label>
+                <input type="date" class="form-control" id="fecFin" name="fecFin">
+
+                <label for="prioridad">Prioridad</label>
+                <input type="number" class="form-control" id="prioridad" name="prioridad" required min="1" max="4">
+
+                <label for="tiempo">Tiempo</label>
+                <input type="number" class="form-control" id="tiempo" name="tiempo" min="0">
+
+                <button type="submit" class="btn btn-primary mt-4">Guardar</button>
+            </div>
+        </form>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>

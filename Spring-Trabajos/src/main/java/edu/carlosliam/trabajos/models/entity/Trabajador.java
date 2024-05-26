@@ -155,4 +155,8 @@ public class Trabajador implements Serializable{
 	private static boolean validarNie(String nie) {
 		return validarNif(nie.replace('X', '0').replace('Y', '1').replace('Z', '2'));
 	}
+
+    public void setIdTrabajador(String idTrabajador) {
+		this.idTrabajador = idTrabajador;
+    }
 }

@@ -80,4 +80,18 @@ public class TrabajadorInTrabajoDTO {
 
         return trabajadorDTO;
     }
+
+    public static Trabajador convertToEntity(TrabajadorInTrabajoDTO trabajador) {
+        Trabajador trabajadorEntity = new Trabajador();
+
+        trabajadorEntity.setIdTrabajador(trabajador.getIdTrabajador());
+        trabajadorEntity.setNombre(trabajador.getNombre());
+        trabajadorEntity.setApellidos(trabajador.getApellidos());
+        trabajadorEntity.setEspecialidad(trabajador.getEspecialidad());
+        trabajadorEntity.setDni(trabajador.getDni());
+        trabajadorEntity.setEmail(trabajador.getEmail());
+        trabajadorEntity.setContraseña(trabajador.getContraseña());
+
+        return trabajadorEntity;
+    }
 }

@@ -102,4 +102,29 @@ public class TrabajoDTO {
 
         return trabajoDTO;
     }
+
+    public static Trabajo convertToEntity(TrabajoDTO trabajoDTO) {
+        Trabajo trabajo = new Trabajo();
+
+        trabajo.setCodTrab(trabajoDTO.getCodTrab());
+        trabajo.setCategoria(trabajoDTO.getCategoria());
+        trabajo.setDescripcion(trabajoDTO.getDescripcion());
+        trabajo.setFecIni(trabajoDTO.getFecIni());
+
+        if (trabajoDTO.getFecFin() != null) {
+            trabajo.setFecFin(trabajoDTO.getFecFin());
+        }
+
+        if (trabajoDTO.getTiempo() != null) {
+            trabajo.setTiempo(trabajoDTO.getTiempo());
+        }
+
+        trabajo.setPrioridad(trabajoDTO.getPrioridad());
+
+        if (trabajoDTO.getTrabajador() != null) {
+            trabajo.setTrabajador(TrabajadorInTrabajoDTO.convertToEntity(trabajoDTO.getTrabajador()));
+        }
+
+        return trabajo;
+    }
 }
