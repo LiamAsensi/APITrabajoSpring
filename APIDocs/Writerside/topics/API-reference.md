@@ -1,10 +1,6 @@
-# API Reference
+# Referencia de la API
 
-This is a sample Pet Store Server based on the OpenAPI 3.0 specification.
-
-> A very important note about this API.
-> 
-{style="note"}
+Esta es una API para el manejo de trabajadores y los trabajos que realizan.
 
 <!-- Use the <api-doc> element to generate the documentation for a few specific endpoints and methods with the same tag 
 or <api-endpoint> element to generate the documentation for a specific endpoint and method.

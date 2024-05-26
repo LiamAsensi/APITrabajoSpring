@@ -4,9 +4,9 @@
 
 <instance-profile id="adoc"
                  name="Nesteja API Docs"
-                 start-page="api-docs.md">
+                 start-page="Section-Starting-Page.topic">
 
-    <toc-element topic="api-docs.md"/>
+    <toc-element topic="Section-Starting-Page.topic"/>
     <toc-element topic="API-quickstart.md"/>
     <toc-element topic="API-reference.md">
         <toc-element topic="Trabajo.md">
@@ -34,6 +34,5 @@
             <toc-element topic="Eliminar-trabajador.md"/>
         </toc-element>
     </toc-element>
-    <toc-element topic="Changes.md"/>
-    <toc-element topic="Section-Starting-Page.topic"/>
+    <toc-element topic="Manual-de-la-web.md"/>
 </instance-profile>
