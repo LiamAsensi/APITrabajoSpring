@@ -49,9 +49,9 @@ public class TrabajoTempController {
     }
 
     @PostMapping("/trabajo/save")
-    public String guardarTrabajo(@ModelAttribute TrabajoDTO trabajoDTO, Model model) {
+    public String guardarTrabajo(@ModelAttribute Trabajo trabajo, Model model) {
         try {
-            trabajoService.save(TrabajoDTO.convertToEntity(trabajoDTO));
+            trabajoService.save(trabajo);
 
             return "redirect:/app/trabajo";
         } catch (Exception e) {

@@ -16,7 +16,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="app/index">Home</a>
+                        <a class="nav-link active" href="/app/index">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/app/trabajo">Trabajos</a>
@@ -73,6 +73,9 @@
         <h1 class="mb-4">Nuevo Trabajo</h1>
         <form th:action="@{/app/trabajo/save}" method="post">
             <div class="form-group">
+                <label for="codTrab">Código</label>
+                <input type="text" class="form-control" name="codTrab" id="codTrab" required>
+
                 <label for="descripcion">Descripción</label>
                 <input type="text" class="form-control" id="descripcion" name="descripcion" required>
 
