@@ -29,21 +29,15 @@ public class TrabajoTempController {
     @GetMapping("/trabajo")
     public String trabajos(Model model) {
         try {
-            List<TrabajoDTO> trabajosDTO = trabajoService.findAll()
-                    .stream()
-                    .map(TrabajoDTO::convertToDTO)
-                    .collect(Collectors.toList());
+            List<Trabajo> trabajos = trabajoService.findAll();
 
-            List<TrabajadorDTO> trabajadoresDTO = trabajadorService.findAll()
-                    .stream()
-                    .map(TrabajadorDTO::convertToDTO)
-                    .collect(Collectors.toList());
+            List<Trabajador> trabajadores = trabajadorService.findAll();
 
-            model.addAttribute("trabajos", trabajosDTO);
-            model.addAttribute("trabajadores", trabajadoresDTO);
+            model.addAttribute("trabajos", trabajos);
+            model.addAttribute("trabajadores", trabajadores);
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Error al obtener la lista de trabajos.");
+            model.addAttribute("error", "Error al obtener la lista de trabajos: "
+                    + e.getMessage());
         }
         return "trabajo";
     }
@@ -79,16 +73,13 @@ public class TrabajoTempController {
         try {
             Trabajo trabajo = trabajoService.findById(id);
             model.addAttribute("trabajo", trabajo);
-            List<TrabajadorDTO> trabajadoresDTO = trabajadorService.findAll()
-                    .stream()
-                    .map(TrabajadorDTO::convertToDTO)
-                    .collect(Collectors.toList());
-            model.addAttribute("trabajadores", trabajadoresDTO);
+            List<Trabajador> trabajadores = trabajadorService.findAll();
+            model.addAttribute("trabajadores", trabajadores);
             return "trabajo-form"; // Vista del formulario de edición
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Error al cargar el trabajo para editar.");
-            return "trabajo-form"; // redirigir a la lista de trabajos en caso de error
+            return "trabajo"; // redirigir a la lista de trabajos en caso de error
         }
     }
 
@@ -98,11 +89,8 @@ public class TrabajoTempController {
         try {
             Trabajo trabajo = new Trabajo();
             model.addAttribute("trabajo", trabajo);
-            List<TrabajadorDTO> trabajadoresDTO = trabajadorService.findAll()
-                    .stream()
-                    .map(TrabajadorDTO::convertToDTO)
-                    .collect(Collectors.toList());
-            model.addAttribute("trabajadores", trabajadoresDTO);
+            List<Trabajador> trabajadores = trabajadorService.findAll();
+            model.addAttribute("trabajadores", trabajadores);
             return "trabajo-new";
         } catch (Exception e) {
             e.printStackTrace();

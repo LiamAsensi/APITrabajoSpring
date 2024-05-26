@@ -9,28 +9,30 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">APIGestor</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="/app/index">Nesteja</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/app/index">Home</a>
+                        <a class="nav-link" href="/app/index">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/app/trabajo">Trabajos</a>
+                        <a class="nav-link active" href="/app/trabajo">Trabajos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Trabajadores</a>
+                        <a class="nav-link" href="/app/trabajador">Trabajadores</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
-    <div class="container mt-4">
-        <h1 class="mb-4">Lista de Trabajos</h1>
+    <div class="container-fluid bg-primary text-light p-4">
+        <h1>Lista de Trabajos</h1>
+    </div>
+    <div class="container mt-4 mb-4">
         <div th:if="${error}" class="alert alert-danger" role="alert">
             <p th:text="${error}"></p>
         </div>

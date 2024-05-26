@@ -8,30 +8,31 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">APIGestor</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/app/index">Nesteja</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/app/index">Home</a>
+                    <a class="nav-link" href="/app/index">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/app/trabajo">Trabajos</a>
+                    <a class="nav-link active" href="/app/trabajo">Trabajos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Trabajadores</a>
+                    <a class="nav-link" href="/app/trabajador">Trabajadores</a>
                 </li>
             </ul>
         </div>
     </nav>
 </header>
-
+<div class="container-fluid bg-primary text-light p-4">
+    <h1>Nuevo Trabajo</h1>
+</div>
 <!-- Formulario de nuevo trabajo -->
-<div class="container mt-4">
-    <h1 class="mb-4">Nuevo Trabajo</h1>
+<div class="container mt-4 mb-4">
     <form th:action="@{/app/trabajo/save}" method="post">
         <div class="form-group">
             <label for="codTrab">Código</label>
@@ -71,7 +72,7 @@
             <input type="number" class="form-control" id="prioridad" name="prioridad" required min="1" max="4">
 
             <label for="tiempo">Tiempo</label>
-            <input type="number" class="form-control" id="tiempo" name="tiempo" min="0">
+            <input type="number" step="0.1" class="form-control" id="tiempo" name="tiempo" min="0">
 
             <button type="submit" class="btn btn-primary mt-4">Guardar</button>
         </div>
