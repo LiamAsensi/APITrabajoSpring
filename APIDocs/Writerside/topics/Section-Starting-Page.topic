@@ -15,5 +15,19 @@
             <a href="Trabajo.md" type="data" summary="Sección con la información de trabajos">Trabajos</a>
             <a href="Trabajador.md" type="account" summary="Sección con la información de trabajadores">Trabajadores</a>
         </spotlight>
+
+        <!--    Add several topics that are most important for this section.    -->
+        <primary>
+            <title>Empieza rápidamente</title>
+            <a href="Obtener-todos-los-trabajos.md" summary="Servicio GET para conseguir todos los trabajos">Obtener trabajos</a>
+            <a href="Obtener-todos-los-trabajadores.md" summary="Servicio GET para conseguir todos los trabajadores">Obtener trabajadores</a>
+        </primary>
+
+        <!--    Add several topics that are less important or are relevant only for advanced/experienced users.    -->
+        <secondary>
+            <title>Funciones más avanzadas</title>
+            <a href="Obtener-trabajos-de-trabajador-ordenado-por-prioridad.md" summary="Servicio GET para conseguir trabajos de un trabajador según la prioridad">Obtener trabajos de trabajador por prioridad</a>
+            <a href="Obtener-trabajos-entre-fechas.md" summary="Servicio GET para conseguir los trabajos entre dos fechas">Obtener trabajos entre fechas</a>
+        </secondary>
     </section-starting-page>
 </topic>
