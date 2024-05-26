@@ -6,4 +6,8 @@
         <accepts>page.html</accepts>
     </rule>
     -->
+    <rule id="b9c0511">
+        <description>Created after removal of "Section Starting Page" from Nesteja API Docs</description>
+        <accepts>Section-Starting-Pagea.html</accepts>
+    </rule>
 </rules>
