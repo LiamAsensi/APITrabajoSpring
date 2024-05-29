@@ -201,6 +201,38 @@ public class TrabajoRestController {
 	}
 
 	/*
+	 * Servicio para obtener un listado de trabajos finalizados ordenados por prioridad
+	 * de un trabajador pasado por parámetro
+	 */
+	@GetMapping("/trabajos/finalizados/{trabajadorId}/prioridad")
+	public ResponseEntity<?> tareasEmpleadoPorPrioridadFinalizadas(@PathVariable String trabajadorId) {
+		List<TrabajoDTO> trabajosDTO;
+
+		try {
+			// Encontrar el trabajador por ID
+			Trabajador trabajador = this.trabajadorService.findById(trabajadorId);
+			if (trabajador == null) {
+				return createErrorResponse(HttpStatus.NOT_FOUND,
+						"El trabajador con el ID: ".concat(trabajadorId).concat(" no se ha encontrado."));
+			}
+
+			trabajosDTO = this.trabajoService
+					.findAll()
+					.stream()
+					.filter(t -> t.getTrabajador() == trabajador)
+					.filter(t -> t.getFecFin() != null)
+					.sorted(Comparator.comparingInt(Trabajo::getPrioridad))
+					.map(TrabajoDTO::convertToDTO)
+					.toList();
+		} catch (DataAccessException e) {
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error al realizar la consulta en la base de datos.");
+		}
+
+		return createResultResponse(HttpStatus.OK, trabajosDTO);
+	}
+
+	/*
 	 * Servicio para obtener un listado de trabajos pendientes de una prioridad
 	 * en concreto de un trabajador pasado por parámetro
 	 */
@@ -427,6 +459,7 @@ public class TrabajoRestController {
 		return createResultResponse(HttpStatus.CREATED, TrabajoDTO.convertToDTO(trabajoUpdate));
 	}
 
+	// FALTA AÑADIR EL TIEMPO DE FINALIZACIÓN DE LA TAREA QUE LE LLEGA POR PARÁMETRO
 	@PutMapping("/trabajos/{trabajoId}/finalizar/{actualDate}")
 	public ResponseEntity<?> finalizarTrabajo(@PathVariable String trabajoId, @PathVariable String actualDate) {
 		Trabajo trabajoUpdate;
