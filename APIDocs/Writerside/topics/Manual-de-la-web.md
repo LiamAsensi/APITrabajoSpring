@@ -2,6 +2,8 @@
 
 ## Página de trabajos
 
+> **URL**: /app/trabajo
+
 La página de trabajos contará con una tabla qué lista todas los Trabajos, mostrando sus datos, trabajadores asignados y 
 fecha de inicio y fin en caso de haber sido finalizada.
 
@@ -13,6 +15,8 @@ datos cargados en el formulario.
 
 ### Nuevo trabajo
 
+> **URL**: /app/trabajo/new
+
 Por último esta vista contará con un botón de ‘**Nuevo trabajo**’ qué no dirigirá a la página de formulario para 
 crear nuestro nuevo trabajo.
 
@@ -20,11 +24,15 @@ crear nuestro nuevo trabajo.
 
 ### Editar trabajo
 
+> **URL**: /app/trabajo/edit/codTrabajo
+
 La vista de la página de editar Trabajo se vería de la siguiente forma: 
 
 ![](edit-trabajo.png)
 
 ## Página de trabajadores
+
+> **URL**: /app/trabajador
 
 La página de trabajadores cuenta con otra tabla que muestra la mayoría de los datos de los trabajadores (A excepción de
 la contraseña por motivos obvios y de sus trabajos).
@@ -36,6 +44,8 @@ enlace (situado en el nombre del trabajador) que lleva al detalle de ese trabaja
 
 ### Nuevo trabajador
 
+> **URL**: /app/trabajador/new
+
 El formualrio para añadir un trabajador tiene el siguiente aspecto:
 
 ![](nuevo-trabajador.png)
@@ -45,11 +55,15 @@ el DNI debe ser correcto (No solo el formato, debe cumplir con la validación de
 
 ### Editar trabajador
 
+> **URL**: /app/trabajador/edit/idTrabajador
+
 La vista para editar un trabajador se vería así:
 
 ![](edit-trabajador.png)
 
 ### Detalle del trabajador
+
+> **URL**: /app/trabajador/idTrabajador
 
 Como ya se ha dicho, al pulsar en el enlace del nombre de un trabajador, se nos lleva a su página de detalle, donde
 podemos ver todos sus datos (A excepción, de nuevo, de su contraseña) y donde además tenemos una vista sencilla de 
