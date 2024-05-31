@@ -463,9 +463,11 @@ public class TrabajoRestController {
 	@PutMapping("/trabajos/{trabajoId}/finalizar/{actualDate}")
 	public ResponseEntity<?> finalizarTrabajo(@PathVariable String trabajoId, @PathVariable String actualDate) {
 		Trabajo trabajoUpdate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MM-yyyy");
 
 		try {
-			LocalDate actualDateParsed = LocalDate.parse(actualDate);
+			LocalDate actualDateParsed = LocalDate.parse(actualDate, formatter);
+
 			// Encontrar el trabajo por ID
 			Trabajo trabajoActual = this.trabajoService.findById(trabajoId);
 			if (trabajoActual == null) {
